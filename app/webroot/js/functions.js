@@ -463,3 +463,9 @@ function autolist(e) {
         }
     })
 }
+
+function toUpperCase(a) {
+    setTimeout(function () {
+        a.value = a.value.toUpperCase();
+    }, 1);
+}
