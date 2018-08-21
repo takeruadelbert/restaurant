@@ -46,6 +46,11 @@ class AppModel extends Model {
                 "type" => "comma"
             ],
         ],
+        "RestoMenu" => [
+            "price" => [
+                "type" => "dot"
+            ]
+        ]
     ];
     var $deleteableHasmany = [
         "ModuleLink" => [
