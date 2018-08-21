@@ -550,4 +550,54 @@ class AccountsController extends AppController {
         $this->layout = _TEMPLATE_DIR . "/{$this->template}/login";
     }
 
+    function api_android_login() {
+        $this->autoRender = false;
+        if($this->request->is("POST")) {
+            $username = $this->data['username'];
+            $password = $this->data['password'];
+            if(empty($username) || empty($password)) {
+                return json_encode($this->_generateStatusCode(402, "Login Failed : either username and/or password must not be empty."));
+            }
+            $dataUser = $this->Account->find("first",[
+                "conditions" => [
+                    "OR" => [
+                        "User.email" => $username,
+                        "User.username" => $username
+                    ]
+                ],
+                "contain" => [
+                    "User"
+                ]
+            ]);
+            
+            // check login credential
+            $loginCredential = ClassRegistry::init("LoginPageCredential")->find("list",[
+                "conditions" => [
+                    "LoginPage.name" => "im",
+                    "LoginPageCredential.access" => true
+                ],
+                "fields" => [
+                    "LoginPageCredential.user_group_id"
+                ],
+                "contain" => [
+                    "LoginPage"
+                ]
+            ]);
+            if(!empty($dataUser)) {
+                if($this->_testPassword($password, $dataUser['User']['salt'], $dataUser['User']['password'])) {
+                    if(in_array($dataUser['User']['user_group_id'], $loginCredential)) {
+                        return json_encode($this->_generateStatusCode(206));
+                    } else {
+                        return json_encode($this->_generateStatusCode(403, "Login Failed : you have no privilege. Contact your Admin ASAP."));
+                    }
+                } else {
+                    return json_encode($this->_generateStatusCode(402, "Login Failed : wrong either username and/or password."));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(402, "Login Failed : invalid username/email."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(400));
+        }
+    }
 }
