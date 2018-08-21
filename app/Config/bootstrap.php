@@ -96,13 +96,13 @@ define("_FRONT_TEMPLATE_DIR", "front_template");
 define("_EMPTY_IMAGE", "/img/no_image.jpg");
 
 define("_APP_VERSION","1.0.0");
-define("_APP_NAME","AppShortName");
-define("_APP_REFERENCE_NAME","Application Name");
+define("_APP_NAME","Resto System");
+define("_APP_REFERENCE_NAME","Resturant System");
 define("_APP_KEY","random");
-define("_APP_CORPORATE","Corporate Name");
-define("_APP_START","2016");
+define("_APP_CORPORATE","Restaurant System");
+define("_APP_START","2018");
 
-define("_DEVELOPER_NAME","Surya Teknologi Nusantara");
+define("_DEVELOPER_NAME","Takeru T.K. - Surya Teknologi Nusantara");
 define("_DEVELOPER_WEBSITE","http://www.suryateknologi.com/");
 
 define("_PRIVATE_DIR", "Asset");
