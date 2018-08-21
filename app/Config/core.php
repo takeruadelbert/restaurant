@@ -217,11 +217,14 @@ Configure::write('Routing.prefixes', array('admin', 'front', 'member'));
  */
 Configure::write('Session', array(
     'defaults' => 'php',
-    'timeout' => 30,
-    'autoRegenerate' => true,
+    'timeout' => 7200,
+    'autoRegenerate' => false,
     'checkAgent' => false,
-    'save' => 'stn',
-    'cookie' => 'stn',
+    'save' => 'restaurant',
+    'cookie' => 'restaurant',
+    'ini' => array(
+        'session.gc_maxlifetime' => 7200, //in minute
+    )
 ));
 
 /**
