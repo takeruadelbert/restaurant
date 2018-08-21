@@ -98,4 +98,32 @@ class RestoMenusController extends AppController {
         }
     }
 
+    public function api_get_menu_list() {
+        $this->autoRender = false;
+        if($this->request->is("GET")) {
+            $menu_category_id = $this->request->query['category_id'];
+            $conds = [];
+            if(!empty($menu_category_id)) {
+                $conds = [
+                    "RestoMenu.menu_category_id" => $menu_category_id
+                ];
+            }
+            $data = $this->RestoMenu->find("all",[
+                "conditions" => [
+                    $conds
+                ],
+                "contain" => [
+                    "MenuCategory"
+                ],
+                "order" => "RestoMenu.name"
+            ]);
+            if(!empty($data)) {
+                return json_encode($this->_generateStatusCode(205, "Data Found.", $data));
+            } else {
+                return json_encode($this->_generateStatusCode(401));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(400));
+        }
+    }
 }

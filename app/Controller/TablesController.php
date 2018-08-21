@@ -16,4 +16,25 @@ class TablesController extends AppController {
         $this->_setPageInfo("admin_add", "");
         $this->_setPageInfo("admin_edit", "");
     }
+    
+    function api_get_table_list() {
+        $this->autoRender = false;
+        if($this->request->is("GET")) {
+            $data = $this->Table->find("list",[
+                "fields" => [
+                    "Table.id",
+                    "Table.name"
+                ],
+                "recursive" => -1,
+                'order' => "Table.name"
+            ]);
+            if(!empty($data)) {
+                return json_encode($this->_generateStatusCode(205, "Data Found.", $data));
+            } else {
+                return json_encode($this->_generateStatusCode(401));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(400));
+        }
+    }
 }
