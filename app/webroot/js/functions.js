@@ -46,6 +46,8 @@ $(document).ready(function () {
         autolist(this);
     });
     loadckeditor();
+    reloadisdecimal();
+    $('form').preventDoubleSubmission();
 })
 
 function doFilter(e) {
@@ -443,7 +445,7 @@ function sprintf() {
 
 function autolist(e) {
     var id = $(e).val();
-    console.log(id);
+//    console.log(id);
     var targetE = $(e).data("autolist-target");
     var url = $(e).data("autolist-url");
     var emptyLabel = $(e).data("autolist-emptylabel");
@@ -468,4 +470,39 @@ function toUpperCase(a) {
     setTimeout(function () {
         a.value = a.value.toUpperCase();
     }, 1);
+}
+
+// jQuery plugin to prevent double submission of forms
+jQuery.fn.preventDoubleSubmission = function () {
+    $(this).on('submit', function (e) {
+        var $form = $(this);
+        if ($form.data('submitted') === true) {
+            // Previously submitted - don't submit again
+            e.preventDefault();
+        } else {
+            // Mark it so that the next submit can be ignored
+            $form.data('submitted', true);
+        }
+    });
+    // Keep chainability
+    return this;
+};
+
+function reloadisdecimal() {
+    $(".isdecimal").each(function () {
+        decimalseperator($(this));
+        $(this).on("change paste keyup", function () {
+            decimalseperator($(this));
+        })
+    })
+}
+
+function decimalseperator(e) {
+    var currentVal = e.val().replace(/[^\/\d]/g, '');
+    var currentNum = parseFloat(currentVal);
+    e.data("realval", currentNum);
+    var formattedNum = isNaN(currentNum) ? 0 : currentNum.toLocaleString('id-ID', {
+        maximumFractionDigits: 2,
+    })
+    e.val(formattedNum);
 }

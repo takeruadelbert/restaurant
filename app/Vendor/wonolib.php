@@ -137,3 +137,11 @@ function str_replace_first($from, $to, $subject)
 
     return preg_replace($from, $to, $subject, 1);
 }
+
+function ic_rupiah($rupiah = 0, $decimal = false) {
+    if ($decimal === false) {
+        return number_format($rupiah, 0, ",", ".");
+    } else {
+        return number_format($rupiah, 0, ",", ".") . ",-";
+    }
+}
