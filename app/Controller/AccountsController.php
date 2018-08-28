@@ -566,7 +566,8 @@ class AccountsController extends AppController {
                     ]
                 ],
                 "contain" => [
-                    "User"
+                    "User",
+                    "Biodata"
                 ]
             ]);
             
@@ -586,7 +587,7 @@ class AccountsController extends AppController {
             if(!empty($dataUser)) {
                 if($this->_testPassword($password, $dataUser['User']['salt'], $dataUser['User']['password'])) {
                     if(in_array($dataUser['User']['user_group_id'], $loginCredential)) {
-                        return json_encode($this->_generateStatusCode(206));
+                        return json_encode($this->_generateStatusCode(206, "Login Success.", $dataUser));
                     } else {
                         return json_encode($this->_generateStatusCode(403, "Login Failed : you have no privilege. Contact your Admin ASAP."));
                     }
