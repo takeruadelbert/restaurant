@@ -14,6 +14,10 @@ class RestoMenu extends AppModel {
         "price" => [
             "rule" => "validate_price",
             "message" => "Harga Harus > 0"
+        ],
+        "description" => [
+            "rule" => "notEmpty",
+            "message" => "Wajib Diisi"
         ]
     );
     public $belongsTo = array(

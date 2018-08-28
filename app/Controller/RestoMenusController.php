@@ -100,10 +100,10 @@ class RestoMenusController extends AppController {
 
     public function api_get_menu_list() {
         $this->autoRender = false;
-        if($this->request->is("GET")) {
-            $menu_category_id = $this->request->query['category_id'];
+        if($this->request->is("GET")) {            
             $conds = [];
-            if(!empty($menu_category_id)) {
+            if(isset($this->request->query['category_id']) && !empty($this->request->query['category_id'])) {
+                $menu_category_id = $this->request->query['category_id'];
                 $conds = [
                     "RestoMenu.menu_category_id" => $menu_category_id
                 ];
@@ -118,12 +118,36 @@ class RestoMenusController extends AppController {
                 "order" => "RestoMenu.name"
             ]);
             if(!empty($data)) {
-                return json_encode($this->_generateStatusCode(205, "Data Found.", $data));
+                return json_encode($this->_generateStatusCode(206, "Data Found.", $data));
             } else {
                 return json_encode($this->_generateStatusCode(401));
             }
         } else {
             return json_encode($this->_generateStatusCode(400));
+        }
+    }
+    
+    public function api_get_menu() {
+        $this->autoRender = false;
+        if($this->request->is("GET")) {
+            if(isset($this->request->query['menu_id']) && !empty($this->request->query['menu_id'])) {
+                $menu_id = $this->request->query['menu_id'];
+                $data = $this->RestoMenu->find("first",[
+                    "conditions" => [
+                        "RestoMenu.id" => $menu_id
+                    ],
+                    "recursive" => -1
+                ]);
+                if(!empty($data)) {
+                    return json_encode($this->_generateStatusCode(206, "Data Found.", $data));
+                } else {
+                    return json_encode($this->_generateStatusCode(401));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(404, "Either Empty or Invalid Params."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(400, "Invalid Request Type."));
         }
     }
 }

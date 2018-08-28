@@ -70,6 +70,16 @@
                         </tr>
                         <tr>
                             <td>
+                                <div class="form-group">
+                                    <?php
+                                    echo $this->Form->label("RestoMenu.description", __("Deskripsi"), array("class" => "col-sm-2 control-label"));
+                                    echo $this->Form->input("RestoMenu.description", array("div" => array("class" => "col-sm-10"), "label" => false, "class" => "form-control ckeditor-fix"));
+                                    ?>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <div class="form-actions text-right">
                                     <input name="Button" type="button" onclick="history.go(-1);" class="btn btn-success" value="<?= __("Kembali") ?>">
                                     <input type="reset" value="Reset" class="btn btn-info">

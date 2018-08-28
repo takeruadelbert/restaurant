@@ -22,6 +22,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/resto-menu");
                             <th><?= __("Nama") ?></th>
                             <th><?= __("Kategori") ?></th>
                             <th colspan="2"><?= __("Harga") ?></th>
+                            <th><?= __("Deskripsi") ?></th>
                             <th><?= __("Gambar") ?></th>
                             <th width="100"><?= __("Aksi") ?></th>
                         </tr>
@@ -34,7 +35,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/resto-menu");
                         if (empty($data['rows'])) {
                             ?>
                             <tr>
-                                <td class = "text-center" colspan = 8>Tidak Ada Data</td>
+                                <td class = "text-center" colspan = 9>Tidak Ada Data</td>
                             </tr>
                             <?php
                         } else {
@@ -47,6 +48,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/resto-menu");
                                     <td class="text-center"><?= $item['MenuCategory']['name'] ?></td>
                                     <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>
                                     <td class="text-right" style = "border-left-style:none !important" width = "150"><?= ic_rupiah($item['RestoMenu']['price']) ?></td>
+                                    <td><?= $item['RestoMenu']['description'] ?></td>
                                     <td class="text-center">
                                         <?php
                                         if (!empty($item['RestoMenu']['image_path'])) {
