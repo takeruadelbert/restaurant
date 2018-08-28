@@ -74,8 +74,9 @@ Router::connect("/admin/restriction", array("admin" => true, "controller" => "ac
 //Setting
 Router::connect('/setting', array('admin' => true, 'controller' => 'company_profiles', 'action' => 'edit','1'));
 
-// api
+// API
 Router::connect('/android-login', array('api' => true, 'controller' => 'accounts', 'action' => 'android_login'));
+Router::connect("/get-category/*", array('api' => true, 'controller' => 'menu_categories', 'action' => 'get_category'));
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on
