@@ -55,7 +55,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/resto-menu");
                                             <?php
                                         } else {
                                             ?>
-                                            <img src="<?= Router::url("img/no_image.jpg", true) ?>" width="100" height="100">
+                                            <img src="<?= Router::url("/img/no_image.jpg", true) ?>" width="100" height="100">
                                             <?php
                                         }
                                         ?>
