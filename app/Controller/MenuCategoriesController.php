@@ -130,7 +130,7 @@ class MenuCategoriesController extends AppController {
                     "recursive" => -1
                 ]);
                 if (!empty($data)) {
-                    return json_encode($this->_generateStatusCode(206, "Data Foubd.", $data));
+                    return json_encode($this->_generateStatusCode(206, "Data Found.", $data));
                 } else {
                     return json_encode($this->_generateStatusCode(401));
                 }
