@@ -77,6 +77,8 @@ Router::connect('/setting', array('admin' => true, 'controller' => 'company_prof
 // API
 Router::connect('/android-login', array('api' => true, 'controller' => 'accounts', 'action' => 'android_login'));
 Router::connect("/get-category/*", array('api' => true, 'controller' => 'menu_categories', 'action' => 'get_category'));
+Router::connect('/get-menu-list', array('api' => true, 'controller' => 'resto_menus', 'action' => 'get_menu_list'));
+Router::connect('/get-menu', array('api' => true, 'controller' => 'resto_menus', 'action' => 'get_menu'));
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on
