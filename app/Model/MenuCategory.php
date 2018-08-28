@@ -10,6 +10,10 @@ class MenuCategory extends AppModel {
         'uniq' => [
             "rule" => "notEmpty",
             "message" => "Wajib Diisi"
+        ],
+        'ordering_number' => [
+            "rule" => "notEmpty",
+            "message" => "Wajib Diisi"
         ]
     );
     public $belongsTo = array(

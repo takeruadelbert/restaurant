@@ -1,4 +1,4 @@
-<?php echo $this->Form->create("MenuCategory", array("class" => "form-horizontal form-separate", "action" => "add", "id" => "formSubmit", "inputDefaults" => array("error" => array("attributes" => array("wrap" => "label", "class" => "error"))))) ?>
+<?php echo $this->Form->create("MenuCategory", array("class" => "form-horizontal form-separate", "action" => "add", "type" => "file" , "id" => "formSubmit", "inputDefaults" => array("error" => array("attributes" => array("wrap" => "label", "class" => "error"))))) ?>
 <div class="row">
     <div class="col-lg-12 col-md-12">
         <div class="panel panel-default">
@@ -40,6 +40,26 @@
                                             <?php
                                             echo $this->Form->label("MenuCategory.parent_id", __("Parent"), array("class" => "col-sm-3 col-md-4 control-label"));
                                             echo $this->Form->input("MenuCategory.parent_id", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "select-full", 'empty' => '', 'placeholder' => '- Pilih Parent -'));
+                                            ?>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <?php
+                                            echo $this->Form->label("MenuCategory.gambar", __("Thumbnail"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("MenuCategory.gambar", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control styled", 'required', "type" => "file"));
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <?php
+                                            echo $this->Form->label("MenuCategory.ordering_number", __("Ordering Number"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("MenuCategory.ordering_number", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control"));
                                             ?>
                                         </div>
                                     </div>

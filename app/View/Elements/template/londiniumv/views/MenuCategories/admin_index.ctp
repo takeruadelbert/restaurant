@@ -22,6 +22,8 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/menu-category");
                             <th><?= __("Nama") ?></th>
                             <th><?= __("Kode") ?></th>
                             <th><?= __("Parent") ?></th>
+                            <th width="150"><?= __("Ordering Number") ?></th>
+                            <th><?= __("Preview") ?></th>
                             <th width="50"><?= __("Aksi") ?></th>
                         </tr>
                     </thead>
@@ -33,7 +35,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/menu-category");
                         if (empty($data['rows'])) {
                             ?>
                             <tr>
-                                <td class = "text-center" colspan = 6>Tidak Ada Data</td>
+                                <td class = "text-center" colspan = 8>Tidak Ada Data</td>
                             </tr>
                             <?php
                         } else {
@@ -45,6 +47,20 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/menu-category");
                                     <td class="text-center"><?= $item['MenuCategory']['name'] ?></td>
                                     <td class="text-center"><?= $item['MenuCategory']['uniq'] ?></td>
                                     <td class="text-center"><?= emptyToStrip(@$item['Parent']['name']) ?></td>
+                                    <td class="text-center"><?= $item['MenuCategory']['ordering_number'] ?></td>
+                                    <td class="text-center">
+                                        <?php
+                                        if (!empty($item['MenuCategory']['image_path'])) {
+                                            ?>
+                                            <img src="<?= Router::url($item['MenuCategory']['image_path'], true) ?>" width="200" height="100">
+                                            <?php
+                                        } else {
+                                            ?>
+                                            <img src="<?= Router::url("/img/no_image.jpg", true) ?>" width="100" height="100">
+                                            <?php
+                                        }
+                                        ?>
+                                    </td>
                                     <td class="text-center">
                                         <?= $this->element(_TEMPLATE_DIR . "/{$template}/roleaccess/edit", ["editUrl" => Router::url("/admin/{$this->params['controller']}/edit/{$item[Inflector::classify($this->params['controller'])]['id']}")]) ?>
                                     </td>
