@@ -651,6 +651,20 @@ class AppController extends Controller {
             }
         }
     }
+    
+    function admin_view($id = null) {
+        if (!$this->{ Inflector::classify($this->name) }->exists($id)) {
+            throw new NotFoundException(__("Id Not Found"));
+        } else {
+            $rows = $this->{ Inflector::classify($this->name) }->find("first", array(
+                'conditions' => array(
+                    Inflector::classify($this->name) . ".id" => $id
+                ),
+                'recursive' => 3
+            ));
+            $this->data = $rows;
+        }
+    }
 
     function admin_multiple_delete() {
         $this->{ Inflector::classify($this->name) }->set($this->data);
