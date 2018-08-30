@@ -50,6 +50,22 @@ class AppModel extends Model {
             "price" => [
                 "type" => "dot"
             ]
+        ],
+        "Order" => [
+            "grand_total" => [
+                "type" => "dot"
+            ]
+        ],
+        "OrderDetail" => [
+            "total" => [
+                "type" => "dot"
+            ],
+            "ppn" => [
+                "type" => "dot"
+            ],
+            "diskon" => [
+                "type" => "dot"
+            ]
         ]
     ];
     var $deleteableHasmany = [
