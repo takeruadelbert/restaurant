@@ -5,7 +5,7 @@ App::uses('AppController', 'Controller');
 class OrdersController extends AppController {
 
     var $name = "Orders";
-    var $disabledAction=array(
+    var $disabledAction = array(
     );
     var $contain = array(
         "Table",
@@ -13,61 +13,74 @@ class OrdersController extends AppController {
             "RestoMenu"
         ]
     );
-    
+
     function beforeFilter() {
         parent::beforeFilter();
         $this->_setPageInfo("admin_index", "");
         $this->_setPageInfo("admin_add", "");
         $this->_setPageInfo("admin_edit", "");
     }
-    
+
     function beforeRender() {
         $this->options();
         parent::beforeRender();
     }
-    
+
     function options() {
         $this->set("tables", ClassRegistry::init("Table")->find("list", ['fields' => ['Table.id', 'Table.name']]));
     }
-    
+
     function api_post_order() {
         $this->autoRender = false;
-        if($this->request->is("POST")) {
-//            $resto_menu_id = $this->data['resto_menu_id'];
-//            $quantity = $this->data['quantity'];
-//            $amount = $this->data['amount']; // price for each menu
-//            $note = $this->data['note'];
-//            $ppn = $this->data['ppn'];
-//            $discount = $this->data['discount'];
-//            if(!empty($resto_menu_id) && !empty($quantity) && !empty($amount) && !empty($note) && !empty($ppn) && !empty($discount)) {
-//                $total = $amount * $quantity;
-//            } else {
-//                $err_item = [];
-//                if(empty($resto_menu_id)) {
-//                    $err_item[] = "resto_menu_id";
-//                } else if(empty($quantity)) {
-//                    $err_item[] = "quantity";
-//                } else if(empty($amount)) {
-//                    $err_item[] = "amount";
-//                } else if(empty($note)) {
-//                    $err_item[] = "note";
-//                } else if(empty($ppn)) {
-//                    $err_item[] = "ppn";
-//                } else if(empty($discount)) {
-//                    $err_item[] = "discount";
-//                }
-//                $message = "There's error(s) with following field(s) : ";
-//                for($i = 0; $i < count($err_item); $i++) {
-//                    if($i != count($err_item) - 1) {
-//                        $message = "'{$err_item[$i]}', ";
-//                    } else {
-//                        $message = "'{$err_item[$i]}'.";
-//                    }
-//                }
-//                return json_encode($this->_generateStatusCode(405, $message));
-//            }
+        //$data = json_decode(file_get_contents('php://input'), true);
+        if ($this->request->is("POST")) {
+            $data = json_decode($this->data['order'], true);
+            if (!empty($data)) {
+                // check the no table if it's registered on database
+                $no_table = $data['no_table'];
+                $dataTable = ClassRegistry::init("Table")->findByName($no_table);
+                if (!empty($dataTable)) {
+                    $table_id = $dataTable['Table']['id'];
+                    $no_order = ClassRegistry::init("Order")->generate_order_number();
+                    $total_amount_before_tax_discount = $data['total'];
+                    $grand_total = $total_amount_before_tax_discount;
+                    $order_detail = [];
+                    if (!empty($data['detail'])) {
+                        $request_data_detail = json_decode($data['detail'], true);
+                        foreach ($request_data_detail as $detail) {
+                            $order_detail[] = [
+                                "resto_menu_id" => $detail['resto_menu_id'],
+                                "quantity" => $detail['quantity'],
+                                "amount" => $detail['amount'],
+                                "note" => @$detail['note']
+                            ];
+                        }
+                    }
+                    $result = [
+                        "Order" => [
+                            "no_order" => $no_order,
+                            "table_id" => $table_id,
+                            "total_kotor" => $total_amount_before_tax_discount,
+                            "grand_total" => $grand_total
+                        ],
+                        "OrderDetail" => $order_detail
+                    ];
+                    try {
+                        $this->Order->saveAll($result);
+                        return json_encode($this->_generateStatusCode(200, "Data has been saved successfully."));
+                    } catch (Exception $ex) {
+                        debug("Error : failed to save.");
+                        return json_encode($this->_generateStatusCode(405, "Error : Failed to save."));
+                    }
+                } else {
+                    return json_encode($this->_generateStatusCode(401, "No Table found."));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(401, "failed"));
+            }
         } else {
-            return json_encode($this->_generateStatusCode(400, "Invalid Request Type."));
+            return json_encode($this->_generateStatusCode(405, "Invalid Request Type."));
         }
     }
+
 }
