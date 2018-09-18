@@ -11,14 +11,14 @@ class Order extends AppModel {
             "rule" => "notEmpty",
             "message" => "Wajib Diisi."
         ],
-        "device_id" => [
+        "account_id" => [
             "rule" => "notEmpty",
             "message" => "Wajib Diisi."
         ]
     );
     public $belongsTo = array(
         "Table",
-        "Device"
+        "Account"
     );
     public $hasOne = array(
         

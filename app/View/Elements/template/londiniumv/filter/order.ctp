@@ -28,8 +28,8 @@
                         <?= $this->Form->input(null, ['div' => false, 'label' => false, 'class' => 'form-control datepicker', 'name' => "akhir.Order.created", 'default' => isset($this->request->query['akhir_Order_created']) ? $this->request->query['akhir_Order_created'] : "", 'placeholder' => "Periode Akhir ..."]) ?>
                     </div>
                     <div class="col-md-6">
-                        <label><?= __("Device") ?></label>
-                        <?= $this->Form->input(null, ['div' => false, 'label' => false, 'class' => 'select-full', 'name' => 'select.Order.device_id', 'default' => isset($this->request->query['select_Order_device_id']) ? $this->request->query['select_Order_device_id'] : "", 'empty' => "", 'placeholder' => '- Semua -', 'options' => $devices]) ?>
+                        <label><?= __("Operator") ?></label>
+                        <?= $this->Form->input(null, ['div' => false, 'label' => false, 'class' => 'select-full', 'name' => 'select.Order.account_id', 'default' => isset($this->request->query['select_Order_account_id']) ? $this->request->query['select_Order_account_id'] : "", 'empty' => "", 'placeholder' => '- Semua -', 'options' => $accounts]) ?>
                     </div>
                 </div>
             </div>

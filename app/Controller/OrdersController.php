@@ -12,7 +12,9 @@ class OrdersController extends AppController {
         "OrderDetail" => [
             "RestoMenu"
         ],
-        "Device"
+        "Account" => [
+            "Biodata"
+        ]
     );
 
     function beforeFilter() {
@@ -29,7 +31,7 @@ class OrdersController extends AppController {
 
     function options() {
         $this->set("tables", ClassRegistry::init("Table")->find("list", ['fields' => ['Table.id', 'Table.name']]));
-        $this->set("devices", ClassRegistry::init("Device")->find("list", ['fields' => ["Device.id", "Device.full_label"]]));
+        $this->set("accounts", ClassRegistry::init("Account")->get_list_full_name());
     }
 
     function api_post_order() {

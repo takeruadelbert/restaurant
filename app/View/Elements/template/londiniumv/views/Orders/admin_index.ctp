@@ -19,7 +19,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/order");
                             <th><?= __("No. Order") ?></th>
                             <th><?= __("Meja") ?></th>
                             <th><?= __("Tanggal") ?></th>
-                            <th><?= __("Device") ?></th>
+                            <th><?= __("Operator") ?></th>
                             <th colspan="2"><?= __("Total") ?></th>
                         </tr>
                     </thead>
@@ -42,7 +42,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/order");
                                     <td class="text-center"><a target="_blank" href="<?= Router::url("/admin/orders/view/{$item['Order']['id']}") ?>"><?= $item['Order']['no_order'] ?></a></td>
                                     <td class="text-center"><?= $item['Table']['name'] ?></td>
                                     <td class="text-center"><?= $this->Html->cvtWaktu($item['Order']['created']) ?></td>
-                                    <td class="text-center"><?= $item['Device']['full_label'] ?></td>
+                                    <td class="text-center"><?= $item['Account']['Biodata']['full_name'] ?></td>
                                     <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>                                    
                                     <td class="text-right" style = "border-left-style:none !important" width = "150"><?= ic_rupiah($item['Order']['grand_total']) ?></td>
                                 </tr>
