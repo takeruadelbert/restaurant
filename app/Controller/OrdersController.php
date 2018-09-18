@@ -39,9 +39,8 @@ class OrdersController extends AppController {
             $data = json_decode($this->data['order'], true);
             if (!empty($data)) {
                 // check if the device is registered by the system
-                $ipv4_device = $data['ipv4'];
-                $dataDevice = ClassRegistry::init("Device")->findByIpAddress($ipv4_device);
-                if (!empty($dataDevice)) {
+                $account_id = $data['account_id'];
+                if (!empty($account_id)) {
                     // check the no table if it's registered on database
                     $no_table = $data['no_table'];
                     $dataTable = ClassRegistry::init("Table")->findByName($no_table);
@@ -68,7 +67,7 @@ class OrdersController extends AppController {
                                 "table_id" => $table_id,
                                 "total_kotor" => $total_amount_before_tax_discount,
                                 "grand_total" => $grand_total,
-                                "device_id" => $dataDevice['Device']['id']
+                                "account_id" => $account_id
                             ],
                             "OrderDetail" => $order_detail
                         ];
@@ -83,7 +82,7 @@ class OrdersController extends AppController {
                         return json_encode($this->_generateStatusCode(401, "No Table found."));
                     }
                 } else {
-                    return json_encode($this->_generateStatusCode(401, "Device Not Registered."));
+                    return json_encode($this->_generateStatusCode(401, "Invalid 'Account ID' param."));
                 }
             } else {
                 return json_encode($this->_generateStatusCode(401, "failed"));
@@ -95,6 +94,25 @@ class OrdersController extends AppController {
 
     function api_get_order() {
         $this->autoRender = false;
+        if ($this->request->is("GET")) {
+            $account_id = $this->request->query['account_id'];
+            if (!empty($ipv4)) {
+                $dataOrder = $this->find("all", [
+                    "conditions" => [
+                        "Order.device_id" => $dataDevice['Device']['id']
+                    ],
+                    "contain" => [
+                        "Table",
+                        "OrderStatus"
+                    ],
+                    "order" => "Order.created DESC"
+                ]);
+            } else {
+                return json_encode($this->_generateStatusCode(405, "Error : invalid 'Account ID' param."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(405, "Invalid Request Type."));
+        }
     }
 
 }
