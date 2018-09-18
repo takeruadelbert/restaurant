@@ -20,6 +20,7 @@ class Device extends AppModel {
         ]
     );
     var $virtualFields = array(
+        "full_label" => "concat(Device.name, ' (', Device.ip_address, ')')"
     );
 
     function beforeValidate($options = array()) {

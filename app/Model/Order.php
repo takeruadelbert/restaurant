@@ -10,10 +10,15 @@ class Order extends AppModel {
         'table_id' => [
             "rule" => "notEmpty",
             "message" => "Wajib Diisi."
+        ],
+        "device_id" => [
+            "rule" => "notEmpty",
+            "message" => "Wajib Diisi."
         ]
     );
     public $belongsTo = array(
-        "Table"
+        "Table",
+        "Device"
     );
     public $hasOne = array(
         
