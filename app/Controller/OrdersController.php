@@ -94,14 +94,16 @@ class OrdersController extends AppController {
         }
     }
 
-    function api_get_order() {
+    function api_get_order_status() {
         $this->autoRender = false;
+        $view = new View($this);
+        $helper = $view->loadHelper("Html");
         if ($this->request->is("GET")) {
             $account_id = $this->request->query['account_id'];
-            if (!empty($ipv4)) {
-                $dataOrder = $this->find("all", [
+            if (!empty($account_id)) {
+                $dataOrder = $this->{Inflector::classify($this->name)}->find("all", [
                     "conditions" => [
-                        "Order.device_id" => $dataDevice['Device']['id']
+                        "Order.account_id" => $account_id
                     ],
                     "contain" => [
                         "Table",
@@ -109,6 +111,20 @@ class OrdersController extends AppController {
                     ],
                     "order" => "Order.created DESC"
                 ]);
+                $result = [];
+                if(!empty($dataOrder)) {
+                    foreach ($dataOrder as $order) {
+                        $result[] = [
+                            "no_order" => $order['Order']['no_order'],
+                            "no_table" => $order['Table']['name'],
+                            "order_status_id" => $order['Order']['order_status_id'],
+                            "order_date" => $helper->cvtWaktu($order['Order']['created'])
+                        ];
+                    }
+                    return json_encode($this->_generateStatusCode(206, 'OK', $result));
+                } else {
+                    return json_encode($this->_generateStatusCode(400, 'Invalid Data Order.'));
+                }
             } else {
                 return json_encode($this->_generateStatusCode(405, "Error : invalid 'Account ID' param."));
             }

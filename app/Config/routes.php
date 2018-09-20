@@ -80,7 +80,7 @@ Router::connect("/get-category/*", array('api' => true, 'controller' => 'menu_ca
 Router::connect('/get-menu-list', array('api' => true, 'controller' => 'resto_menus', 'action' => 'get_menu_list'));
 Router::connect('/get-menu', array('api' => true, 'controller' => 'resto_menus', 'action' => 'get_menu'));
 Router::connect('/post-data-order', array('api' => true, 'controller' => 'orders', 'action' => "post_order"));
-Router::connect("/get-data-order", array("api" => true, 'controller' => "orders", 'action' => 'get_order'));
+Router::connect("/get-data-order-status", array("api" => true, 'controller' => "orders", 'action' => 'get_order_status'));
 
 /**
  * Load all plugin routes. See the CakePlugin documentation on

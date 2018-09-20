@@ -18,7 +18,8 @@ class Order extends AppModel {
     );
     public $belongsTo = array(
         "Table",
-        "Account"
+        "Account",
+        "OrderStatus"
     );
     public $hasOne = array(
         
