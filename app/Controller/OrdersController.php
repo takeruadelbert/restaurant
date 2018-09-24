@@ -133,4 +133,52 @@ class OrdersController extends AppController {
         }
     }
 
+    function admin_print_order() {
+        if($this->request->is("POST")) {
+            debug($this->data);
+            die;
+        }
+    }
+    
+    function admin_list_order() {
+        $this->autoRender = false;
+        $conds = [];
+        if (isset($this->request->query['q'])) {
+            $q = $this->request->query['q'];
+            $conds[] = array(
+                "or" => array(
+                    "Order.no_order like" => "%$q%"
+            ));
+        }
+        $suggestions = ClassRegistry::init("Order")->find("all", array(
+            "conditions" => [
+                $conds,
+                "Order.order_status_id" => 1 // not completed yet
+            ],
+            "contain" => array(
+                "Table",
+                "Account" => [
+                    "Biodata"
+                ],
+                "OrderDetail" => [
+                    "RestoMenu"
+                ]
+            ),
+            "limit" => 10,
+        ));
+        $result = [];
+        foreach ($suggestions as $item) {
+            if (!empty($item['Order'])) {
+                $result[] = [
+                    "id" => @$item['Order']['id'],
+                    "no_order" => @$item['Order']['no_order'],
+                    "account_name" => @$item['Account']['Biodata']['full_name'],
+                    "created" => @$item['Order']['created'],
+                    "table_name" => @$item['Table']['name'],
+                    "order_detail" => @$item['OrderDetail']
+                ];
+            }
+        }
+        return json_encode($result);
+    }
 }

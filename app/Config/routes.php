@@ -50,8 +50,10 @@ Router::connect('/admin', array('controller' => 'accounts', 'action' => 'login_a
 Router::connect('/admin/lupa-password', array('controller' => 'accounts', 'action' => 'login_utama_lupa_password'));
 Router::connect('/admin/dashboard', array('admin' => true, 'controller' => 'accounts', 'action' => 'dashboard'));
 Router::connect('/admin/logout', array('controller' => 'accounts', 'action' => 'logout_admin'));
-
 Router::connect('/reset-password/*', array('controller' => 'accounts', 'action' => 'reset_password'));
+
+Router::connect("/print-order", array("admin" => true, "controller" => "orders", 'action' => "print_order"));
+
 //index
 Router::connect('/module/*', array('admin' => true, 'controller' => 'modules', 'action' => 'index'));
 Router::connect('/module-content/*', array('admin' => true, 'controller' => 'module_contents', 'action' => 'index'));
