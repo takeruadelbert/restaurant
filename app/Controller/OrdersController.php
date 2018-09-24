@@ -115,8 +115,8 @@ class OrdersController extends AppController {
                 if(!empty($dataOrder)) {
                     foreach ($dataOrder as $order) {
                         $result[] = [
+                            "order_id" => $order['Order']['id'],
                             "no_order" => $order['Order']['no_order'],
-                            "no_table" => $order['Table']['name'],
                             "order_status_id" => $order['Order']['order_status_id'],
                             "order_date" => $helper->cvtWaktu($order['Order']['created'])
                         ];
