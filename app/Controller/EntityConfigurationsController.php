@@ -60,4 +60,29 @@ class EntityConfigurationsController extends AppController {
         }
     }
 
+    function admin_ip_address_printer_setting($id = 1) {
+        $id = 1;
+        if ($this->request->is("post") || $this->request->is("put")) {
+            $this->{ Inflector::classify($this->name) }->set($this->data);
+            if ($this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('validate' => 'only', "deep" => true))) {
+                if (!is_null($id)) {
+                    $this->{ Inflector::classify($this->name) }->data[Inflector::classify($this->name)]['id'] = $id;
+                    $this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('deep' => true));
+                    $this->Session->setFlash(__("Data berhasil diubah"), 'default', array(), 'success');
+                    $this->redirect(array('action' => 'admin_ip_address_printer_setting'));
+                }
+            } else {
+                $this->validationErrors = $this->{ Inflector::classify($this->name) }->validationErrors;
+                $this->redirect(array('action' => 'admin_ip_address_printer_setting'));
+            }
+        } else {
+            $rows = $this->{ Inflector::classify($this->name) }->find("first", array(
+                'conditions' => array(
+                    Inflector::classify($this->name) . ".id" => $id
+                ),
+                'recursive' => 2
+            ));
+            $this->data = $rows;
+        }
+    }
 }

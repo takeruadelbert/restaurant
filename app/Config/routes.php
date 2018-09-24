@@ -53,6 +53,7 @@ Router::connect('/admin/logout', array('controller' => 'accounts', 'action' => '
 Router::connect('/reset-password/*', array('controller' => 'accounts', 'action' => 'reset_password'));
 
 Router::connect("/print-order", array("admin" => true, "controller" => "orders", 'action' => "print_order"));
+Router::connect("/set-ip-address-printer", array("admin" => true, 'controller' => 'entity_configurations', 'action' => 'ip_address_printer_setting'));
 
 //index
 Router::connect('/module/*', array('admin' => true, 'controller' => 'modules', 'action' => 'index'));
