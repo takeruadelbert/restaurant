@@ -47,6 +47,13 @@ class AppHelper extends Helper {
         }
         return "Rp. " . number_format($Rp, 0, "", ".") . ",-";
     }
+    
+    function separator_idr($Rp) {
+        if ($Rp == "") {
+            return "0";
+        }
+        return number_format($Rp, 0, "", ".");
+    }
 
     function cvtTanggal($date = null, $now = true) {
         if (!empty($date)) {
