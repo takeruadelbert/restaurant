@@ -211,6 +211,7 @@ class TemplateHelper extends HtmlHelper {
         "plugin/purl.js",
         "ckeditor/ckeditor.js",
         "menumapping.js",
+        "wonolib.js",
     );
     var $cssDefault = array(
         "flag-icon/css/flag-icon.min.css",

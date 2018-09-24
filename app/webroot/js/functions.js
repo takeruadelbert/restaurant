@@ -256,6 +256,11 @@ function cvtTanggal(date) {
     return d.getUTCDate() + " " + bulan[d.getUTCMonth()] + " " + d.getUTCFullYear();
 }
 
+function cvtWaktu(date) {
+    var d = new Date(date);
+    return d.getUTCDate() + " " + bulan[d.getUTCMonth()] + " " + d.getUTCFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+}
+
 function sprintf() {
     // http://kevin.vanzonneveld.net
     // +   original by: Ash Searle (http://hexmen.com/blog/)
