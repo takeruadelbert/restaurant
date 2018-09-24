@@ -14,7 +14,8 @@ class OrdersController extends AppController {
         ],
         "Account" => [
             "Biodata"
-        ]
+        ],
+        "OrderStatus"
     );
 
     function beforeFilter() {
@@ -32,6 +33,7 @@ class OrdersController extends AppController {
     function options() {
         $this->set("tables", ClassRegistry::init("Table")->find("list", ['fields' => ['Table.id', 'Table.name']]));
         $this->set("accounts", ClassRegistry::init("Account")->get_list_full_name());
+        $this->set("orderStatuses", ClassRegistry::init("OrderStatus")->find("list", ['fields' => ['OrderStatus.id', 'OrderStatus.name']]));
     }
 
     function api_post_order() {
