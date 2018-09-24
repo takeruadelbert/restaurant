@@ -42,6 +42,12 @@
                                             echo $this->Form->input("Order.created", array("type" => "text", "div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control datetime", 'disabled'));
                                             ?>
                                         </div>
+                                        <div class="col-md-6">
+                                            <?php
+                                            echo $this->Form->label("Account.Biodata.full_name", __("Petugas"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("Account.Biodata.full_name", array("type" => "text", "div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control", 'disabled'));
+                                            ?>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
