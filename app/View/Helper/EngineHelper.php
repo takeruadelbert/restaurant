@@ -46,4 +46,21 @@ class EngineHelper extends HtmlHelper {
         return json_encode($target);
     }
 
+    function toJSONoptionsWithParent($list = [], $encode = false) {
+        $target = [];
+        foreach ($list as $parent => $child) {
+            $temp = [];
+            foreach ($child as $value => $label) {
+                $temp[] = [
+                    "value" => $value,
+                    "label" => $label
+                ];
+            }
+            $target[] = [
+                "parent" => $parent,
+                "child" => $temp
+            ];
+        }
+        return !$encode ? $target : json_encode($target);
+    }
 }
