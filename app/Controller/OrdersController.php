@@ -61,10 +61,11 @@ class OrdersController extends AppController {
                             $request_data_detail = json_decode($data['detail'], true);
                             foreach ($request_data_detail as $detail) {
                                 $order_detail[] = [
-                                    "resto_menu_id" => $detail['resto_menu_id'],
-                                    "quantity" => $detail['quantity'],
-                                    "amount" => $detail['amount'],
-                                    "note" => @$detail['note']
+                                    "resto_menu_id" => @$detail['resto_menu_id'],
+                                    "quantity" => @$detail['quantity'],
+                                    "amount" => @$detail['amount'],
+                                    "note" => @$detail['note'],
+                                    "total" => $detail['amount'] * $detail['quantity']
                                 ];
                             }
                         }
