@@ -54,17 +54,23 @@ class AppModel extends Model {
         "Order" => [
             "grand_total" => [
                 "type" => "dot"
-            ]
-        ],
-        "OrderDetail" => [
-            "total" => [
-                "type" => "dot"
             ],
             "ppn" => [
                 "type" => "dot"
             ],
-            "diskon" => [
+            "discount" => [
                 "type" => "dot"
+            ],
+        ],
+        "OrderDetail" => [
+            "total" => [
+                "type" => "dot"
+            ],            
+            "amount" => [
+                "type" => "dot"
+            ],
+            "quantity" => [
+                "type" => 'dot'
             ]
         ]
     ];
@@ -72,6 +78,9 @@ class AppModel extends Model {
         "ModuleLink" => [
             "relationField" => "module_id",
         ],
+        "OrderDetail" => [
+            "relationField" => "order_id"
+        ]
     ];
 
     public function saveData() {
