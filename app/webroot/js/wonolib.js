@@ -10,7 +10,7 @@ function RP(rp) {
 
 function IDR(rp) {
     if (rp == "") {
-        return "Rp. 0";
+        return "0";
     }
     while (/(\d+)(\d{3})/.test(rp.toString())) {
         rp = rp.toString().replace(/(\d+)(\d{3})/, '$1' + '.' + '$2');
