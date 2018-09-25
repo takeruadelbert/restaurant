@@ -63,6 +63,7 @@
                             <tr>
                                 <th width="50"><?= __("No") ?></th>
                                 <th><?= __("Nama Makanan/Minuman") ?></th>
+                                <th colspan="2"><?= __("Harga Satuan") ?></th>
                                 <th width="100" colspan="2"><?= __("Jumlah") ?></th>
                                 <th><?= __("Keterangan") ?></th>
                                 <th colspan="2"><?= __("Total") ?></th>
@@ -77,6 +78,8 @@
                                     <tr>
                                         <td class="text-center"><?= $no ?></td>
                                         <td class="text-center"><?= $detail['RestoMenu']['name'] ?></td>
+                                        <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>
+                                        <td class="text-right" style = "border-left-style:none !important" width = "150"><?= ic_rupiah($detail['amount']) ?></td>
                                         <td class="text-right" style = "border-right-style:none !important" width = "150"><?= $detail['quantity'] ?></td>
                                         <td class="text-center" style = "" width = "50">pcs</td>
                                         <td class="text-center"><i><?= emptyToStrip(@$detail['note']) ?></i></td>
@@ -89,7 +92,7 @@
                             } else {
                                 ?>
                                 <tr>
-                                    <td colspan="7">Tidak Ada Data</td>
+                                    <td colspan="9">Tidak Ada Data</td>
                                 </tr>
                                 <?php
                             }
@@ -97,17 +100,17 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="5" class="text-right"><strong>SubTotal</strong></td>
+                                <td colspan="7" class="text-right"><strong>SubTotal</strong></td>
                                 <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>
                                 <td class="text-right" style = "border-left-style:none !important" width = "150"><strong><?= ic_rupiah($this->data['Order']['total_kotor']) ?></strong></td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-right"><strong>PPN</strong></td>
+                                <td colspan="7" class="text-right"><strong>PPN</strong></td>
                                 <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>
                                 <td class="text-right" style = "border-left-style:none !important" width = "150"><?= ic_rupiah($this->data['Order']['ppn']) ?></td>
                             </tr>
                             <tr>
-                                <td colspan="5" class="text-right"><strong>Grand Total</strong></td>
+                                <td colspan="7" class="text-right"><strong>Grand Total</strong></td>
                                 <td class="text-center" style = "border-right-style:none !important" width = "50">Rp.</td>
                                 <td class="text-right" style = "border-left-style:none !important" width = "150"><strong><?= ic_rupiah($this->data['Order']['grand_total']) ?></strong></td>
                             </tr>

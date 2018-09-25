@@ -30,4 +30,22 @@ class RestoMenu extends AppModel {
     function validate_price() {
         return $this->data['RestoMenu']['price'] <= 0 ? false : true;
     }
+    
+    function get_list_menu() {
+        $result = $this->find("list",[
+            "fields" => [
+                "RestoMenu.id",
+                "RestoMenu.name",
+                "MenuCategory.name"
+            ],
+            "contain" => [
+                "MenuCategory"
+            ],
+            "order" => [
+                "MenuCategory.name",
+                "RestoMenu.name"                
+            ]
+        ]);
+        return $result;
+    }
 }

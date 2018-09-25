@@ -10,7 +10,9 @@ class OrdersController extends AppController {
     var $contain = array(
         "Table",
         "OrderDetail" => [
-            "RestoMenu"
+            "RestoMenu" => [
+                "MenuCategory"
+            ]
         ],
         "Account" => [
             "Biodata"
@@ -34,6 +36,7 @@ class OrdersController extends AppController {
         $this->set("tables", ClassRegistry::init("Table")->find("list", ['fields' => ['Table.id', 'Table.name']]));
         $this->set("accounts", ClassRegistry::init("Account")->get_list_full_name());
         $this->set("orderStatuses", ClassRegistry::init("OrderStatus")->find("list", ['fields' => ['OrderStatus.id', 'OrderStatus.name']]));
+        $this->set("restoMenus", ClassRegistry::init("RestoMenu")->get_list_menu());
     }
 
     function api_post_order() {
@@ -207,6 +210,46 @@ class OrdersController extends AppController {
             }
         }
         return json_encode($result);
+    }
+    
+    function admin_change_order() {
+        $this->conds = [
+            "Order.order_status_id" => 1 // not completed yet
+        ];
+        parent::admin_index();
+    }
+    
+    function admin_edit($id = null) {
+        if (!$this->{ Inflector::classify($this->name) }->exists($id)) {
+            throw new NotFoundException(__('Data tidak ditemukan'));
+        } else {
+            if ($this->request->is("post") || $this->request->is("put")) {
+                $this->{ Inflector::classify($this->name) }->set($this->data);
+                $this->{ Inflector::classify($this->name) }->data[Inflector::classify($this->name)]['id'] = $id;
+                if ($this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('validate' => 'only', "deep" => true))) {
+                    if (!is_null($id)) {
+                        $this->{Inflector::classify($this->name)}->_deleteableHasmany();
+                        $this->{Inflector::classify($this->name)}->_numberSeperatorRemover();
+                        $this->{Inflector::classify($this->name)}->data['Order']['account_id'] = $this->Session->read("credential.admin.Account.id");
+                        $this->{Inflector::classify($this->name)}->data['Order']['total_kotor'] = $this->{Inflector::classify($this->name)}->data['Order']['grand_total'];
+                        $this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('deep' => true));
+                        $this->Session->setFlash(__("Data berhasil diubah"), 'default', array(), 'success');
+                        $this->redirect(array('action' => 'admin_change_order'));
+                    }
+                } else {
+                    $this->request->data[Inflector::classify($this->name)]["id"] = $id;
+                    $this->validationErrors = $this->{ Inflector::classify($this->name) }->validationErrors;
+                }
+            } else {
+                $rows = $this->{ Inflector::classify($this->name) }->find("first", array(
+                    'conditions' => array(
+                        Inflector::classify($this->name) . ".id" => $id
+                    ),
+                    'recursive' => 2
+                ));
+                $this->data = $rows;
+            }
+        }
     }
 
     function print_order($ip_address_printer, $table, $dataOrderDetail) {

@@ -150,4 +150,27 @@ class RestoMenusController extends AppController {
             return json_encode($this->_generateStatusCode(400, "Invalid Request Type."));
         }
     }
+    
+    public function admin_get_data_resto_menu($resto_menu_id = null) {
+        $this->autoRender = false;
+        if(!empty($resto_menu_id)) {
+            if($this->request->is("GET")) {
+                $data = $this->RestoMenu->find("first",[
+                    "conditions" => [
+                        "RestoMenu.id" => $resto_menu_id
+                    ],
+                    "recursive" => -1
+                ]);
+                if(!empty($data)) {
+                    return json_encode($this->_generateStatusCode(206, "OK", $data));
+                } else {
+                    return json_encode($this->_generateStatusCode(401));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(405, "invalid request type."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(401, "ID not found."));
+        }
+    }
 }
