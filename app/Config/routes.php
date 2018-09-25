@@ -56,6 +56,7 @@ Router::connect("/print-order", array("admin" => true, "controller" => "orders",
 Router::connect("/set-ip-address-printer", array("admin" => true, 'controller' => 'entity_configurations', 'action' => 'ip_address_printer_setting'));
 Router::connect("/sistem-konfigurasi", array("admin" => true, 'controller' => 'entity_configurations', 'action' => 'edit'));
 Router::connect("/change-order", array("admin" => true, 'controller' => 'orders', 'action' => 'change_order'));
+Router::connect("/cashier", array("admin" => true, 'controller' => 'orders', 'action' => 'cashier'));
 
 //index
 Router::connect('/module/*', array('admin' => true, 'controller' => 'modules', 'action' => 'index'));

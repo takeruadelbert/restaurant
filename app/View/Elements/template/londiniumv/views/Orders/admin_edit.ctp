@@ -152,6 +152,7 @@
                         </tfoot>
                     </table>
                 </div>
+                <br>
                 <div class="text-center">
                     <input name="Button" type="button" onclick="history.go(-1);" class="btn btn-success" value="<?= __("Kembali") ?>">
                     <input type="reset" value="Reset" class="btn btn-info">

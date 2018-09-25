@@ -164,12 +164,6 @@ class OrdersController extends AppController {
             $this->redirect(array('action' => 'admin_print_order'));
         }
     }
-    
-    function admin_cashier() {
-        if($this->request->is("POST")) {
-            
-        }
-    }
 
     function admin_list_order() {
         $this->autoRender = false;
@@ -212,14 +206,14 @@ class OrdersController extends AppController {
         }
         return json_encode($result);
     }
-    
+
     function admin_change_order() {
         $this->conds = [
             "Order.order_status_id" => 1 // not completed yet
         ];
         parent::admin_index();
     }
-    
+
     function admin_edit($id = null) {
         if (!$this->{ Inflector::classify($this->name) }->exists($id)) {
             throw new NotFoundException(__('Data tidak ditemukan'));
@@ -253,13 +247,97 @@ class OrdersController extends AppController {
         }
     }
 
+    function admin_cashier() {
+        if ($this->request->is("post")) {
+            $this->{ Inflector::classify($this->name) }->set($this->data);
+            if ($this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('validate' => 'only', "deep" => true))) {
+                $this->{Inflector::classify($this->name)}->data['Order']['id'] = $this->data['Order']['id'];
+                $this->{Inflector::classify($this->name)}->data['Order']['order_status_id'] = 2; // completed
+                $this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('deep' => true));
+                $this->Session->setFlash(__("Data Order Berhasil Diupdate."), 'default', array(), 'success');
+                $this->redirect(array('action' => 'admin_cashier'));
+            } else {
+                $this->validationErrors = $this->{ Inflector::classify($this->name) }->validationErrors;
+                $this->Session->setFlash(__("Harap mengecek kembali kesalahan dibawah."), 'default', array(), 'danger');
+            }
+        }
+    }
+
+    function admin_get_data_order_by_table($table_id = null) {
+        $this->autoRender = false;
+        if ($this->request->is("GET")) {
+            if (!empty($table_id)) {
+                $dataOrder = $this->Order->find("first", [
+                    "conditions" => [
+                        "Order.table_id" => $table_id,
+                        "Order.order_status_id" => 1
+                    ],
+                    "order" => "Order.created DESC",
+                    "contain" => [
+                        "OrderDetail" => [
+                            "RestoMenu"
+                        ],
+                        "Account" => [
+                            "Biodata"
+                        ],
+                        "Table"
+                    ]
+                ]);
+                if (!empty($dataOrder)) {
+                    return json_encode($this->_generateStatusCode(206, "OK", $dataOrder));
+                } else {
+                    return json_encode($this->_generateStatusCode(401));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(401));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(405, "Invalid Request type."));
+        }
+    }
+
+    function admin_print_receipt() {
+        $this->autoRender = false;
+        if ($this->request->is("POST")) {
+            $order_id = $this->request->data['order_id'];
+            if (!empty($order_id)) {
+                $dataOrder = $this->Order->find("first", [
+                    "conditions" => [
+                        "Order.id" => $order_id
+                    ],
+                    "contain" => [
+                        "OrderDetail" => [
+                            "RestoMenu"
+                        ],
+                        "Table"
+                    ],
+                ]);
+                if (!empty($dataOrder)) {
+                    $dataPrinter = ClassRegistry::init("EntityConfiguration")->find("first");
+                    $ip_address_printer = $dataPrinter['EntityConfiguration']['ip_address_printer'];
+                    if($this->print_receipt($ip_address_printer, $dataOrder['OrderDetail'])) {
+                        return json_encode($this->_generateStatusCode(206, "Now Printing..."));
+                    } else {
+                        return json_encode($this->_generateStatusCode(405, "Error : Cek Kembali Konfigurasi Printer Anda."));
+                    }
+                } else {
+                    return json_encode($this->_generateStatusCode(401));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(405, "Invalid 'order_id' value."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(405, "Invalid Request Tyoe."));
+        }
+    }
+
     function print_order($ip_address_printer, $table, $dataOrderDetail) {
         $this->autoRender = false;
         if (!empty($ip_address_printer) && !empty($dataOrderDetail) && !empty($table)) {
             App::import("Vendor", "escpos-php/autoload");
             App::import("Vendor", "PrintConnectors", array('file' => 'escpos-php/src/Mike42/Escpos/PrintConnectors/NetworkPrintConnector.php'));
             App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/Printer.php'));
-            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/EscposImage.php'));
+            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/EscposImage.php'));            
 
             try {
                 $connector = new Mike42\Escpos\PrintConnectors\NetworkPrintConnector($ip_address_printer);
@@ -292,7 +370,7 @@ class OrdersController extends AppController {
                 $printer->text("ORDER RECEIPT\n");
                 $printer->setEmphasis(false);
                 $printer->feed();
-                
+
                 /* Table Info */
                 $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
                 $printer->text("Meja : " . $table);
@@ -325,13 +403,89 @@ class OrdersController extends AppController {
         }
     }
 
+    private function print_receipt($ip_address_printer, $dataOrderDetail) {
+        $this->autoRender = false;
+        if (!empty($ip_address_printer) && !empty($dataOrderDetail)) {
+            App::import("Vendor", "escpos-php/autoload");
+            App::import("Vendor", "PrintConnectors", array('file' => 'escpos-php/src/Mike42/Escpos/PrintConnectors/NetworkPrintConnector.php'));
+            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/Printer.php'));
+            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/EscposImage.php'));
+
+            try {
+                $connector = new Mike42\Escpos\PrintConnectors\NetworkPrintConnector($ip_address_printer);
+                $printer = new Mike42\Escpos\Printer($connector);
+
+                $items = [];
+                $grand_total = 0;
+                $view = new View($this);
+                $helper = $view->loadHelper("Html");
+                foreach ($dataOrderDetail as $detail) {
+                    $items[] = new Receipt($detail['RestoMenu']['name'], $helper->separator_idr($detail['total']));
+                    $grand_total += $detail['total'];
+                }
+                $total = new Receipt("Total", $helper->separator_idr($grand_total));
+                
+                $dataSistemConfig = ClassRegistry::init("EntityConfiguration")->find("first");
+                $corporate_name = $dataSistemConfig['EntityConfiguration']['name'];
+                $corporate_address = $dataSistemConfig['EntityConfiguration']['address'];
+
+                // APP CORP NAME
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_CENTER);
+                $printer->text($corporate_name . "\n");
+                $printer->selectPrintMode();
+                $printer->text($corporate_address . "\n");
+                $printer->feed();
+
+                /* Title of receipt */
+                $printer->setEmphasis(true);
+                $printer->text("INVOICE\n");
+                $printer->setEmphasis(false);
+
+                /* Items */
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->setEmphasis(true);
+                $printer->text(new Receipt('', 'IDR'));
+                $printer->setEmphasis(false);
+                foreach ($items as $item) {
+                    $printer->text($item);
+                }
+                $printer->setEmphasis(true);
+                $printer->feed();
+
+                /* Total */
+                $printer->text($total);
+                $printer->selectPrintMode();
+
+                /* Footer */
+                $printer->feed(2);
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_CENTER);
+                $printer->text("Terima Kasih..!\n");
+                $printer->feed(2);
+
+                /* Cut the receipt and open the cash drawer */
+                $printer->cut();
+
+                $printer->close();
+
+                return true;
+            } catch (Exception $ex) {
+                debug($ex);
+                echo $ex;
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
 }
 
 class DataOrder {
+
     private $name;
     private $quantity;
     private $currencySign;
-    
+
     public function __construct($name = '', $quantity = '', $currencySign = false) {
         $this->name = $name;
         $this->quantity = $quantity;
@@ -351,4 +505,29 @@ class DataOrder {
         return "$left$right\n";
     }
 
+}
+
+class Receipt {
+    private $menu_name;
+    private $price;
+    private $currencySign;
+    
+    public function __construct($menu_name = "", $price = "", $currencySign = false) {
+        $this->menu_name = $menu_name;
+        $this->price = $price;
+        $this->currencySign = $currencySign;
+    }
+    
+    public function __toString() {
+        $rightCols = 10;
+        $leftCols = 38;
+        if ($this->currencySign) {
+            $leftCols = $leftCols / 2 - $rightCols / 2;
+        }
+        $left = str_pad($this->menu_name, $leftCols);
+
+        $sign = ($this->currencySign ? 'IDR ' : '');
+        $right = str_pad($sign . $this->price, $rightCols, ' ', STR_PAD_LEFT);
+        return "$left$right\n";
+    }
 }
