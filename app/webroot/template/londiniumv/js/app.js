@@ -21,6 +21,7 @@ $(document).ready(function () {
     $(".required").siblings("label").addClass("label-required");
     reloadDatePicker();
     reloadStyled();
+    reloadSelect2();
 })
 
 function reloadDatePicker() {
@@ -117,4 +118,15 @@ function notif(type, message) {
     Mustache.parse(template);
     var rendered = Mustache.render(template, {message: message});
     $("#flash-block").append(rendered);
+}
+
+function reloadSelect2() {
+    $(".select-full").select2({
+        allowClear: true,
+        width: "100%",
+        formatNoMatches: function () {
+            return "Pencarian Tidak ditemukan";
+        }
+    });
+    $(".select-full").removeClass("select-full");
 }

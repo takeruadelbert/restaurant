@@ -231,12 +231,6 @@ $(function () {
 
     //===== Default select =====//
 
-    $(".select").select2({
-        minimumResultsForSearch: "-1",
-        width: 200
-    });
-
-
     //===== Liquid select =====//
 
     $(".select-liquid").select2({
@@ -247,13 +241,7 @@ $(function () {
 
     //===== Full width select =====//
 
-    $(".select-full").select2({
-        allowClear: true,
-        width: "100%",
-        formatNoMatches: function () {
-            return "Pencarian tidak ditemukan";
-        },
-    });
+    
 
 
     //===== Select with filter input =====//
