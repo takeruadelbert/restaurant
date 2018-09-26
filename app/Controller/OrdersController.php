@@ -48,46 +48,85 @@ class OrdersController extends AppController {
                 // check if the device is registered by the system
                 $account_id = $data['account_id'];
                 if (!empty($account_id)) {
-                    // check the no table if it's registered on database
-                    $no_table = $data['no_table'];
-                    $dataTable = ClassRegistry::init("Table")->findByName($no_table);
-                    if (!empty($dataTable)) {
-                        $table_id = $dataTable['Table']['id'];
-                        $no_order = ClassRegistry::init("Order")->generate_order_number();
-                        $total_amount_before_tax_discount = $data['total'];
-                        $grand_total = $total_amount_before_tax_discount;
-                        $order_detail = [];
-                        if (!empty($data['detail'])) {
-                            $request_data_detail = json_decode($data['detail'], true);
-                            foreach ($request_data_detail as $detail) {
-                                $order_detail[] = [
-                                    "resto_menu_id" => @$detail['resto_menu_id'],
-                                    "quantity" => @$detail['quantity'],
-                                    "amount" => @$detail['amount'],
-                                    "note" => @$detail['note'],
-                                    "total" => $detail['amount'] * $detail['quantity']
-                                ];
+                    // check the print setting : 1 -> print order to kitchen, otherwise not print
+                    $print_type = (int)$data['print_type'];
+                    if (!empty($print_type)) {
+                        // check the no table if it's registered on database
+                        $no_table = $data['no_table'];
+                        $dataTable = ClassRegistry::init("Table")->findByName($no_table);
+                        if (!empty($dataTable)) {
+                            $table_id = $dataTable['Table']['id'];
+                            $no_order = ClassRegistry::init("Order")->generate_order_number();
+                            $total_amount_before_tax_discount = $data['total'];
+                            $grand_total = $total_amount_before_tax_discount;
+                            $order_detail = [];
+                            if (!empty($data['detail'])) {
+                                $request_data_detail = json_decode($data['detail'], true);
+                                foreach ($request_data_detail as $detail) {
+                                    $order_detail[] = [
+                                        "resto_menu_id" => @$detail['resto_menu_id'],
+                                        "quantity" => @$detail['quantity'],
+                                        "amount" => @$detail['amount'],
+                                        "note" => @$detail['note'],
+                                        "total" => $detail['amount'] * $detail['quantity']
+                                    ];
+                                }
                             }
-                        }
-                        $result = [
-                            "Order" => [
-                                "no_order" => $no_order,
-                                "table_id" => $table_id,
-                                "total_kotor" => $total_amount_before_tax_discount,
-                                "grand_total" => $grand_total,
-                                "account_id" => $account_id
-                            ],
-                            "OrderDetail" => $order_detail
-                        ];
-                        try {
-                            $this->Order->saveAll($result);
-                            return json_encode($this->_generateStatusCode(200, "Data has been saved successfully."));
-                        } catch (Exception $ex) {
-                            debug("Error : failed to save.");
-                            return json_encode($this->_generateStatusCode(405, "Error : Failed to save."));
+                            $result = [
+                                "Order" => [
+                                    "no_order" => $no_order,
+                                    "table_id" => $table_id,
+                                    "total_kotor" => $total_amount_before_tax_discount,
+                                    "grand_total" => $grand_total,
+                                    "account_id" => $account_id
+                                ],
+                                "OrderDetail" => $order_detail
+                            ];
+                            try {
+                                $this->Order->saveAll($result);
+                                if($print_type == 1) {
+                                    try {
+                                        $dataSystemConfig = ClassRegistry::init("EntityConfiguration")->find("first");
+                                        $ip_address_printer = $dataSystemConfig['EntityConfiguration']['ip_address_printer'];
+                                        if(!empty($ip_address_printer)) {
+                                            $dataLastInsertOrder = $this->Order->find("first",[
+                                                "conditions" => [
+                                                    "Order.id" => $this->Order->getLastInsertID()
+                                                ],
+                                                "contain" => [
+                                                    "OrderDetail" => [
+                                                        "RestoMenu"
+                                                    ],
+                                                    "Table"
+                                                ]
+                                            ]);
+                                            if(!empty($dataLastInsertOrder)) {
+                                                $this->print_order($ip_address_printer, $dataLastInsertOrder['Table']['name'], $dataLastInsertOrder['OrderDetail']);
+                                                return json_encode($this->_generateStatusCode(200, "Data order has been saved and printed successfully."));
+                                            } else {
+                                                debug("Error : Last Insert Order ID not found.");
+                                                return json_encode($this->_generateStatusCode(401, "Error : Last Insert Order ID not found."));
+                                            }                                            
+                                        } else {
+                                            debug("Error : IP Address Printer not found.");
+                                            return json_encode($this->_generateStatusCode(401, "Error : IP Address Printer not found."));
+                                        }                                        
+                                    } catch (Exception $ex) {
+                                        debug("Error : print order failed.");
+                                        return json_encode($this->_generateStatusCode(405, "Error : print order failed."));
+                                    }
+                                } else {
+                                    return json_encode($this->_generateStatusCode(200, "Data has been saved successfully."));
+                                }                                
+                            } catch (Exception $ex) {
+                                debug("Error : failed to save.");
+                                return json_encode($this->_generateStatusCode(405, "Error : Failed to save."));
+                            }
+                        } else {
+                            return json_encode($this->_generateStatusCode(401, "No Table found."));
                         }
                     } else {
-                        return json_encode($this->_generateStatusCode(401, "No Table found."));
+                        return json_encode($this->_generateStatusCode(401, "Print Type Value is invalid."));
                     }
                 } else {
                     return json_encode($this->_generateStatusCode(401, "Invalid 'Account ID' param."));
@@ -315,7 +354,7 @@ class OrdersController extends AppController {
                 if (!empty($dataOrder)) {
                     $dataPrinter = ClassRegistry::init("EntityConfiguration")->find("first");
                     $ip_address_printer = $dataPrinter['EntityConfiguration']['ip_address_printer'];
-                    if($this->print_receipt($ip_address_printer, $dataOrder['OrderDetail'])) {
+                    if ($this->print_receipt($ip_address_printer, $dataOrder['OrderDetail'])) {
                         return json_encode($this->_generateStatusCode(206, "Now Printing..."));
                     } else {
                         return json_encode($this->_generateStatusCode(405, "Error : Cek Kembali Konfigurasi Printer Anda."));
@@ -337,7 +376,7 @@ class OrdersController extends AppController {
             App::import("Vendor", "escpos-php/autoload");
             App::import("Vendor", "PrintConnectors", array('file' => 'escpos-php/src/Mike42/Escpos/PrintConnectors/NetworkPrintConnector.php'));
             App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/Printer.php'));
-            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/EscposImage.php'));            
+            App::import("Vendor", "Escpos", array('file' => 'escpos-php/src/Mike42/Escpos/EscposImage.php'));
 
             try {
                 $connector = new Mike42\Escpos\PrintConnectors\NetworkPrintConnector($ip_address_printer);
@@ -424,7 +463,7 @@ class OrdersController extends AppController {
                     $grand_total += $detail['total'];
                 }
                 $total = new Receipt("Total", $helper->separator_idr($grand_total));
-                
+
                 $dataSistemConfig = ClassRegistry::init("EntityConfiguration")->find("first");
                 $corporate_name = $dataSistemConfig['EntityConfiguration']['name'];
                 $corporate_address = $dataSistemConfig['EntityConfiguration']['address'];
@@ -508,16 +547,17 @@ class DataOrder {
 }
 
 class Receipt {
+
     private $menu_name;
     private $price;
     private $currencySign;
-    
+
     public function __construct($menu_name = "", $price = "", $currencySign = false) {
         $this->menu_name = $menu_name;
         $this->price = $price;
         $this->currencySign = $currencySign;
     }
-    
+
     public function __toString() {
         $rightCols = 10;
         $leftCols = 38;
@@ -530,4 +570,5 @@ class Receipt {
         $right = str_pad($sign . $this->price, $rightCols, ' ', STR_PAD_LEFT);
         return "$left$right\n";
     }
+
 }
