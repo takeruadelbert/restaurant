@@ -151,6 +151,31 @@ class RestoMenusController extends AppController {
         }
     }
     
+    public function api_get_menu_by_name() {
+        $this->autoRender = false;
+        if($this->request->is("GET")) {
+            $menu_name = $this->request->query['menu_name'];
+            if(!empty($menu_name)) {
+                $menu_name = str_replace("-", " ", $menu_name);
+                $data = $this->RestoMenu->find("first",[
+                    "conditions" => [
+                        "RestoMenu.name" => $menu_name
+                    ],
+                    "recursive" => -1
+                ]);
+                if(!empty($data)) {
+                    return json_encode($this->_generateStatusCode(206, "OK", $data));
+                } else {
+                    return json_encode($this->_generateStatusCode(401));
+                }
+            } else {
+                return json_encode($this->_generateStatusCode(404, "Menu name not found."));
+            }
+        } else {
+            return json_encode($this->_generateStatusCode(400, "Invalid Request Type."));
+        }
+    }
+    
     public function admin_get_data_resto_menu($resto_menu_id = null) {
         $this->autoRender = false;
         if(!empty($resto_menu_id)) {
