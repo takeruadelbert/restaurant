@@ -1,5 +1,12 @@
 <div class="navbar navbar-inverse" role="navigation">
-    <div class="navbar-header"><a class="navbar-brand" href="<?= Router::url("/admin/dashboard", true) ?>"><img style="height:50px" src="<?= Router::url("/img/logo.png", true) ?>" alt="Dinas Pemuda, Olahraga dan Pariwisata" title="<?= _APP_CORPORATE?>"></a></div>
+    <?php
+    $dataLogo = ClassRegistry::init("EntityConfiguration")->find("first");
+    $logo = "/img/logo.png";
+    if(!empty($dataLogo['EntityConfiguration']['logo'])) {
+        $logo = $dataLogo['EntityConfiguration']['logo'];
+    }
+    ?>
+    <div class="navbar-header"><a class="navbar-brand" href="<?= Router::url("/admin/dashboard", true) ?>"><img style="height:50px" src="<?= Router::url($logo, true) ?>" alt="Resto" title="<?= _APP_CORPORATE?>"></a></div>
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-icons"><span class="sr-only">Toggle navbar</span><i class="icon-grid3"></i></button>
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar"><span class="sr-only">Toggle navigation</span><i class="icon-paragraph-justify2"></i></button>
