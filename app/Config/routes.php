@@ -58,6 +58,7 @@ Router::connect("/sistem-konfigurasi", array("admin" => true, 'controller' => 'e
 Router::connect("/change-order", array("admin" => true, 'controller' => 'orders', 'action' => 'change_order'));
 Router::connect("/cashier", array("admin" => true, 'controller' => 'orders', 'action' => 'cashier'));
 Router::connect("/change-logo", array("admin" => true, 'controller' => "entity_configurations", 'action' => "change_logo"));
+Router::connect("/change-background-login", array("admin" => true, 'controller' => "entity_configurations", 'action' => "change_background_login"));
 
 //index
 Router::connect('/module/*', array('admin' => true, 'controller' => 'modules', 'action' => 'index'));
