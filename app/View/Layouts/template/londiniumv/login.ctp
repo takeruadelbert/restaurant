@@ -28,7 +28,7 @@
                 <?= _APP_REFERENCE_NAME ?>
             </div>
             <div class="col-md-12 col-sm-12 col-xs-12 box-bottomFooter font-PoppinsLight center flex">
-                <div><?= _APP_NAME ?> | Copyright &copy; <?= $this->StnAdmin->copyrightYear(_APP_START)?> <?= _APP_CORPORATE ?> | Developed & Maintenance by <a target="_blank" href="<?= _DEVELOPER_WEBSITE ?>"><?= _DEVELOPER_NAME ?></a></div>
+                <div><?= _APP_NAME ?> | Copyright &copy; <?= $this->StnAdmin->copyrightYear(_APP_START)?> <?= _APP_CORPORATE ?> | Developed & Maintenance by <a target="_blank" href="<?= _DEVELOPER_WEBSITE ?>" style="color: white; font-weight: bold;"><?= _DEVELOPER_NAME ?></a></div>
             </div>
             <div class="box-support center">
                 <div class="button-support font-PoppinsLight center center-block flex">
