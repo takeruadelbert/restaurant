@@ -7,15 +7,16 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/account");
         <div class="block-inner text-danger">
             <h6 class="heading-hr"><?= __("DATA PENGGUNA") ?>
                 <div class="pull-right">
-                    <button class="btn btn-xs btn-default" type="button" onclick="exp('print', '<?php echo Router::url("index/print?" . $_SERVER['QUERY_STRING'], true) ?>')">
+<!--                    <button class="btn btn-xs btn-default" type="button" onclick="exp('print', '<?php echo Router::url("index/print?" . $_SERVER['QUERY_STRING'], true) ?>')">
                         <i class="icon-print2"></i> 
                         <?= __("Cetak") ?>
-                    </button>&nbsp;
-                    <button class="btn btn-xs btn-default" type="button" onclick="exp('excel', '<?php echo Router::url("index/excel?" . $_SERVER['QUERY_STRING'], true) ?>')">
+                    </button>&nbsp;-->
+<!--                    <button class="btn btn-xs btn-default" type="button" onclick="exp('excel', '<?php echo Router::url("index/excel?" . $_SERVER['QUERY_STRING'], true) ?>')">
                         <i class="icon-file-excel"></i>
                         Excel
-                    </button>&nbsp;
+                    </button>&nbsp;-->
                     <?= $this->element(_TEMPLATE_DIR . "/{$template}/roleaccess/add") ?>
+                    <?= $this->element(_TEMPLATE_DIR . "/{$template}/roleaccess/delete") ?>
                 </div>
                 <small class="display-block"></small>
             </h6>
@@ -35,7 +36,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/account");
                             <th><?= __("Alamat") ?></th>
                             <th><?= __("No. Handphone") ?></th>
                             <th><?= __("Status Pengguna") ?></th>
-                            <th width="100"><?= __("Aksi") ?></th>
+                            <th width="50"><?= __("Aksi") ?></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -55,13 +56,13 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/account");
                                 <tr id="row-<?= $i ?>" class="removeRow<?php echo $item[Inflector::classify($this->params['controller'])]['id']; ?>">
                                     <td class="text-center"><input type="checkbox" name="data[<?php echo Inflector::classify($this->params['controller']) ?>][checkbox][]" value="<?php echo $item[Inflector::classify($this->params['controller'])]['id']; ?>"  id="checkBoxRow" class="styled checkboxDeleteRow" /></td>
                                     <td class="text-center"><?= $i ?></td>
-                                    <td><?= $item['User']['username'] ?></td>
-                                    <td><?= $item['Biodata']['first_name'] ?></td>
-                                    <td><?= $item['Biodata']['last_name'] ?></td>
-                                    <td><?= $item['User']['email'] ?></td>
-                                    <td><?= $userGroups[$item['User']['user_group_id']] ?></td>
-                                    <td><?= $item['Biodata']['address'] ?></td>
-                                    <td><?= $item['Biodata']['handphone'] ?></td>
+                                    <td class="text-center"><?= $item['User']['username'] ?></td>
+                                    <td class="text-center"><?= $item['Biodata']['first_name'] ?></td>
+                                    <td class="text-center"><?= $item['Biodata']['last_name'] ?></td>
+                                    <td class="text-center"><?= $item['User']['email'] ?></td>
+                                    <td class="text-center"><?= $userGroups[$item['User']['user_group_id']] ?></td>
+                                    <td class="text-center"><?= $item['Biodata']['address'] ?></td>
+                                    <td class="text-center"><?= $item['Biodata']['handphone'] ?></td>
                                     <td>
                                         <?php
                                         if ($roleAccess['edit']) {
@@ -72,7 +73,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/account");
                                         ?>
                                     </td>  
                                     <td class="text-center">
-                                        <a href="#"><button type="button" class="btn btn-default btn-xs btn-icon tip" title="Detail"><i class="icon-file"></i></button></a>
+                                        <a href="<?= Router::url("/admin/accounts/view/{$item['Account']['id']}") ?>"><button type="button" class="btn btn-default btn-xs btn-icon tip" title="Detail"><i class="icon-file"></i></button></a>
                                     </td>
                                 </tr>
                                 <?php

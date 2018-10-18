@@ -37,7 +37,10 @@ class AccountsController extends AppController {
             $allData = $this->data[Inflector::classify($this->name)]['checkbox'];
             foreach ($allData as $data) {
                 if ($data != '' || $data != 0) {
+                    $dataEmployee = $this->Account->findById($data);
+                    $employee_id = $dataEmployee['Employee']['id'];
                     $this->{ Inflector::classify($this->name) }->delete($data, true);
+                    ClassRegistry::init("Employee")->delete($employee_id);
                 }
             }
             $code = 204;
@@ -55,6 +58,7 @@ class AccountsController extends AppController {
             if ($this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data, array('validate' => 'only'))) {
                 $this->{ Inflector::classify($this->name) }->data["User"]["password"] = $encrypt;
                 $this->{ Inflector::classify($this->name) }->data["User"]["salt"] = $salt;
+                $this->{Inflector::classify($this->name)}->data['Employee']['employee_status_id'] = 2;
                 unset($this->{ Inflector::classify($this->name) }->data["User"]["repeatPassword"]);
                 $this->{ Inflector::classify($this->name) }->saveAll($this->{ Inflector::classify($this->name) }->data);
                 $this->Session->setFlash(__("Data berhasil disimpan"), 'default', array(), 'success');
@@ -566,13 +570,13 @@ class AccountsController extends AppController {
 
     function api_android_login() {
         $this->autoRender = false;
-        if($this->request->is("POST")) {
+        if ($this->request->is("POST")) {
             $username = $this->data['username'];
             $password = $this->data['password'];
-            if(empty($username) || empty($password)) {
+            if (empty($username) || empty($password)) {
                 return json_encode($this->_generateStatusCode(402, "Login Failed : either username and/or password must not be empty."));
             }
-            $dataUser = $this->Account->find("first",[
+            $dataUser = $this->Account->find("first", [
                 "conditions" => [
                     "OR" => [
                         "User.email" => $username,
@@ -584,9 +588,9 @@ class AccountsController extends AppController {
                     "Biodata"
                 ]
             ]);
-            
+
             // check login credential
-            $loginCredential = ClassRegistry::init("LoginPageCredential")->find("list",[
+            $loginCredential = ClassRegistry::init("LoginPageCredential")->find("list", [
                 "conditions" => [
                     "LoginPage.name" => "im",
                     "LoginPageCredential.access" => true
@@ -598,9 +602,9 @@ class AccountsController extends AppController {
                     "LoginPage"
                 ]
             ]);
-            if(!empty($dataUser)) {
-                if($this->_testPassword($password, $dataUser['User']['salt'], $dataUser['User']['password'])) {
-                    if(in_array($dataUser['User']['user_group_id'], $loginCredential)) {
+            if (!empty($dataUser)) {
+                if ($this->_testPassword($password, $dataUser['User']['salt'], $dataUser['User']['password'])) {
+                    if (in_array($dataUser['User']['user_group_id'], $loginCredential)) {
                         return json_encode($this->_generateStatusCode(206, "Login Success.", $dataUser));
                     } else {
                         return json_encode($this->_generateStatusCode(403, "Login Failed : you have no privilege. Contact your Admin ASAP."));
@@ -615,7 +619,7 @@ class AccountsController extends AppController {
             return json_encode($this->_generateStatusCode(400));
         }
     }
-    
+
     function forgot_password() {
         if ($this->request->is("POST")) {
             if (isset($this->data['Account']['username']) && empty($this->data['Account']['username'])) {
@@ -676,4 +680,5 @@ class AccountsController extends AppController {
         }
         $this->layout = _TEMPLATE_DIR . "/{$this->template}/login";
     }
+
 }
