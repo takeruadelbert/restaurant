@@ -66,6 +66,9 @@
             $alias = $menu['alias'];
             $newtab = 'target="_blank"';
             $icon = '<i class="icon-new-tab"></i>';
+        } else if ($menu['alias'] == "3D-Render-table") {
+            $alias = Router::url("/" . $menu['alias'] . "?mID=menu_{$menu["menuId"]}", true);
+            $newtab = 'target="_blank"';
         } else {
             $alias = Router::url("/" . $menu['alias'] . "?mID=menu_{$menu["menuId"]}", true);
         }

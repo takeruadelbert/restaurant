@@ -59,6 +59,7 @@ Router::connect("/change-order", array("admin" => true, 'controller' => 'orders'
 Router::connect("/cashier", array("admin" => true, 'controller' => 'orders', 'action' => 'cashier'));
 Router::connect("/change-logo", array("admin" => true, 'controller' => "entity_configurations", 'action' => "change_logo"));
 Router::connect("/change-background-login", array("admin" => true, 'controller' => "entity_configurations", 'action' => "change_background_login"));
+Router::connect("/3D-Render-table", array("admin" => true, 'controller' => 'tables', 'action' => '3DRender'));
 
 //index
 Router::connect('/module/*', array('admin' => true, 'controller' => 'modules', 'action' => 'index'));

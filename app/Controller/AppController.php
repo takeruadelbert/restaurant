@@ -199,7 +199,9 @@ class AppController extends Controller {
             global $URL, $ACTION_URL, $MID;
             if (isset($this->cetak)) {
                 $this->layout = "cetak/" . $this->layoutCetak;
-            } else if ($this->params['admin'] || $this->params['api']) {
+            } else if($this->params['action'] == "admin_3DRender") {
+                $this->layout = _TEMPLATE_DIR . "/{$this->template}/3DRender";
+            } else if ( ($this->params['admin'] && $this->params['action'] != "admin_3DRender") || $this->params['api']) {
                 $this->layout = _TEMPLATE_DIR . "/{$this->template}/default";
             } else if ($this->params['front'] || $this->params['member']) {
                 $this->layout = _FRONT_TEMPLATE_DIR . "/{$this->frontTemplate}/default";

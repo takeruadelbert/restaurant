@@ -167,6 +167,7 @@ class TemplateHelper extends HtmlHelper {
                 "plugins/forms/typeahead.bundle.min.js",
                 "plugins/interface/daterangepicker.js",
                 "plugins/interface/fancybox.min.js",
+//                "plugins/ThreeJS/three.js",
 //                "plugins/interface/moment.js",
 //                "moment-with-locales.min.js",
 //                "plugins/interface/jgrowl.min.js",
@@ -181,7 +182,7 @@ class TemplateHelper extends HtmlHelper {
                 "application.js",
                 "custom-functions.js",
                 "nprogress.js",
-                "app.js",
+                "app.js"
             ),
             "css" => array(
                 "bootstrap.min.css",

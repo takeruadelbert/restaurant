@@ -47,7 +47,7 @@
                                                 <label>Label</label>
                                             </div>
                                             <div class="col-sm-9 col-md-8">
-                                                <input type="text" class="form-control" name="data[Table][label]" required maxlength="2" style="text-transform: uppercase;">
+                                                <input type="text" class="form-control" name="data[Table][label]" required maxlength="2" onkeyup="this.value = this.value.toUpperCase()">
                                                 <span class="help-block" id="limit-text">Label ini digunakan pada 3D Render Layout Meja. Contoh : M1 -> Meja-1</span>
                                             </div>                                            
                                         </div>

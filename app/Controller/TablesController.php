@@ -102,12 +102,12 @@ class TablesController extends AppController {
     }
 
     function admin_3DRender() {
-        $dataTable = $this->Table->find("all", ['recursive' => -1]);
+        $dataTable = $this->Table->find("all", ['recursive' => -1, 'order' => "Table.label"]);
         $result = [];
         if (!empty($dataTable)) {
             foreach ($dataTable as $table) {
+                $result[] = $table['Table']['label'];
                 $result[] = $table['Table']['name'];
-                $result[] = "";
                 $result[] = "";
                 $result[] = $table['Table']['pos_x'];
                 $result[] = $table['Table']['pos_y'];

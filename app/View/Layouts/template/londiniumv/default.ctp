@@ -4,10 +4,19 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1">
-        <title><?= _APP_NAME?> - <?= _APP_CORPORATE?></title>
-        <link rel="icon" type="image/gif/png" href="<?= Router::url("/img/justlogo.png",true)?>">
+        <title><?= _APP_NAME ?> - <?= _APP_CORPORATE ?></title>
+        <link rel="icon" type="image/gif/png" href="<?= Router::url("/img/justlogo.png", true) ?>">
         <?php
         $this->Template->import();
+        if ($this->params['action'] == "admin_3DRender") {
+            ?>
+            <link rel="stylesheet" href="<?= Router::url("/template/londiniumv/css/ThreeJS/three.css", true) ?>">
+            <script src="<?= Router::url("/template/londiniumv/js/plugins/ThreeJS/three.js", true) ?>"></script>
+            <script src="<?= Router::url("/template/londiniumv/js/plugins/ThreeJS/tween.min.js", true) ?>"></script>
+            <script src="<?= Router::url("/template/londiniumv/js/plugins/ThreeJS/TrackballControls.js", true) ?>"></script>
+            <script src="<?= Router::url("/template/londiniumv/js/plugins/ThreeJS/CSS3DRenderer.js", true) ?>"></script>
+            <?php
+        }
         ?>
     </head>
     <body class="sidebar-wide">
