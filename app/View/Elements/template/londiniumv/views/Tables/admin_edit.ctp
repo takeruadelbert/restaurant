@@ -22,6 +22,36 @@
                                             echo $this->Form->input("Table.name", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control", 'required'));
                                             ?>
                                         </div>
+                                        <div class="col-md-3">
+                                            <?php
+                                            echo $this->Form->label("Table.pos_x", __("Posisi X"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("Table.pos_x", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control text-right", 'required', 'data-pos-x' => $this->data['Table']['pos_x']));
+                                            ?>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <?php
+                                            echo $this->Form->label("Table.pos_y", __("Posisi Y"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("Table.pos_y", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control text-right", 'required', 'data-pos-y' => $this->data['Table']['pos_y']));
+                                            ?>
+                                        </div>
+                                        <input type="hidden" name="data[Table][is_pos_change]" value="0" id="flagPos">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="col-sm-3 col-md-4 control-label">
+                                                <label>Label</label>
+                                            </div>
+                                            <div class="col-sm-9 col-md-8">
+                                                <input type="text" class="form-control" name="data[Table][label]" required maxlength="2" onkeyup="this.value = this.value.toUpperCase()" value="<?= !empty($this->data['Table']['label']) ? $this->data['Table']['label'] : "" ?>">
+                                                <span class="help-block" id="limit-text">Label ini digunakan pada 3D Render Layout Meja. Contoh : M1 -> Meja-1</span>
+                                            </div>                                            
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -56,3 +86,30 @@
     </div>
 </div>
 <?php echo $this->Form->end() ?>
+
+<script>
+    $(document).ready(function () {
+        var pos_x = $("#TablePosX").data("pos-x");
+        var pos_y = $("#TablePosY").data("pos-y");
+        var value = 0;
+        $("#TablePosX").on("change keyup", function () {
+            if ($(this).val() != pos_x) {
+                value = 1;
+            }
+            if ($(this).val() == pos_x && $("#TablePosY").val() == pos_y) {
+                value = 0;
+            }
+            $("#flagPos").val(value);
+        });
+
+        $("#TablePosY").on("change", function () {
+            if ($(this).val() != pos_y) {
+                value = 1;
+            }
+            if ($(this).val() == pos_y && $("#TablePosX").val() == pos_x) {
+                value = 0;
+            }
+            $("#flagPos").val(value);
+        });
+    });
+</script>

@@ -20,6 +20,8 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/table");
                             <th width="50"><input type="checkbox" class="styled checkall"/></th>
                             <th width="50">No</th>
                             <th><?= __("Nama") ?></th>
+                            <th><?= __("Kode") ?></th>
+                            <th><?= __("Posisi Koordinat") ?></th>
                             <th><?= __("Keterangan") ?></th>
                             <th width="50"><?= __("Aksi") ?></th>
                         </tr>
@@ -32,7 +34,7 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/table");
                         if (empty($data['rows'])) {
                             ?>
                             <tr>
-                                <td class = "text-center" colspan = 5>Tidak Ada Data</td>
+                                <td class = "text-center" colspan = 7>Tidak Ada Data</td>
                             </tr>
                             <?php
                         } else {
@@ -42,6 +44,8 @@ echo $this->element(_TEMPLATE_DIR . "/{$template}/filter/table");
                                     <td class="text-center"><input type="checkbox" name="data[<?php echo Inflector::classify($this->params['controller']) ?>][checkbox][]" value="<?php echo $item[Inflector::classify($this->params['controller'])]['id']; ?>"  id="checkBoxRow" class="styled checkboxDeleteRow" /></td>
                                     <td class="text-center"><?= $i ?></td>
                                     <td class="text-center"><?= $item['Table']['name'] ?></td>
+                                    <td class="text-center"><?= $item["Table"]['label'] ?></td>
+                                    <td class="text-center"><?= "({$item['Table']['pos_x']},{$item['Table']['pos_y']})" ?></td>
                                     <td class="text-center"><?= emptyToStrip(@$item['Table']['note']) ?></td>
                                     <td class="text-center">
                                         <?= $this->element(_TEMPLATE_DIR . "/{$template}/roleaccess/edit", ["editUrl" => Router::url("/admin/{$this->params['controller']}/edit/{$item[Inflector::classify($this->params['controller'])]['id']}")]) ?>

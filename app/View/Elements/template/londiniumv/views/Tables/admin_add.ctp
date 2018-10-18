@@ -22,6 +22,35 @@
                                             echo $this->Form->input("Table.name", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control", 'required'));
                                             ?>
                                         </div>
+                                        <div class="col-md-3">
+                                            <?php
+                                            echo $this->Form->label("Table.pos_x", __("Posisi X"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("Table.pos_x", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control text-right", 'required'));
+                                            ?>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <?php
+                                            echo $this->Form->label("Table.pos_y", __("Posisi Y"), array("class" => "col-sm-3 col-md-4 control-label"));
+                                            echo $this->Form->input("Table.pos_y", array("div" => array("class" => "col-sm-9 col-md-8"), "label" => false, "class" => "form-control text-right", 'required'));
+                                            ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="col-sm-3 col-md-4 control-label">
+                                                <label>Label</label>
+                                            </div>
+                                            <div class="col-sm-9 col-md-8">
+                                                <input type="text" class="form-control" name="data[Table][label]" required maxlength="2" style="text-transform: uppercase;">
+                                                <span class="help-block" id="limit-text">Label ini digunakan pada 3D Render Layout Meja. Contoh : M1 -> Meja-1</span>
+                                            </div>                                            
+                                        </div>
                                     </div>
                                 </div>
                             </td>
