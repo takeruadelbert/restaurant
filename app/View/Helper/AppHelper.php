@@ -129,6 +129,25 @@ class AppHelper extends Helper {
         }
         return "$tgl $bulan $tahun - $jam:$menit";
     }
+    
+    function cvtWaktuFull($date = null) {
+        if (!empty($date)) {
+            $tgl = date("d", strtotime($date));
+            $bulan = $this->getNamaBulan(date("m", strtotime($date)));
+            $tahun = date("Y", strtotime($date));
+            $jam = date("H", strtotime($date));
+            $menit = date("i", strtotime($date));
+            $detik = date("s", strtotime($date));
+        } else {
+            $tgl = date("d");
+            $bulan = $this->getNamaBulan(date("m"));
+            $tahun = date("Y");
+            $jam = date("H");
+            $menit = date("i");
+            $detik = date("s");
+        }
+        return "$tgl $bulan $tahun - $jam:$menit:$detik";
+    }
 
     function getTanggal($date = null) {
         if (!empty($date)) {
@@ -179,7 +198,7 @@ class AppHelper extends Helper {
         } elseif ($i == 10) {
             $monthName = 'Oktober';
         } elseif ($i == 11) {
-            $monthName = 'Nopember';
+            $monthName = 'November';
         } else {
             $monthName = 'Desember';
         }

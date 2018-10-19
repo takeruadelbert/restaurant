@@ -38,4 +38,24 @@ class Account extends AppModel {
         }
         return $result;
     }
+    
+    public function get_name($id) {
+        if(!empty($id)) {
+            $dataAccount = $this->find("first",[
+                "conditions" => [
+                    "Account.id" => $id
+                ],
+                "contain" > [
+                    "Biodata"
+                ]
+            ]);
+            if(!empty($dataAccount)) {
+                return $dataAccount['Biodata']['full_name'];
+            } else {
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
 }

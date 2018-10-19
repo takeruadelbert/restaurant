@@ -49,7 +49,7 @@ class OrdersController extends AppController {
                 $account_id = $data['account_id'];
                 if (!empty($account_id)) {
                     // check the print setting : 1 -> print order to kitchen, otherwise not print
-                    $print_type = (int)$data['print_type'];
+                    $print_type = (int) $data['print_type'];
                     if (!empty($print_type)) {
                         // check the no table if it's registered on database
                         $no_table = $data['no_table'];
@@ -82,14 +82,16 @@ class OrdersController extends AppController {
                                 ],
                                 "OrderDetail" => $order_detail
                             ];
+                            $operator_name = ClassRegistry::init("Account")->get_name($account_id);
                             try {
                                 $this->Order->saveAll($result);
-                                if($print_type == 1) {
+                                if ($print_type == 1) {
                                     try {
+                                        $dt = date("Y-m-d H:i:s");
                                         $dataSystemConfig = ClassRegistry::init("EntityConfiguration")->find("first");
                                         $ip_address_printer = $dataSystemConfig['EntityConfiguration']['ip_address_printer'];
-                                        if(!empty($ip_address_printer)) {
-                                            $dataLastInsertOrder = $this->Order->find("first",[
+                                        if (!empty($ip_address_printer)) {
+                                            $dataLastInsertOrder = $this->Order->find("first", [
                                                 "conditions" => [
                                                     "Order.id" => $this->Order->getLastInsertID()
                                                 ],
@@ -100,24 +102,24 @@ class OrdersController extends AppController {
                                                     "Table"
                                                 ]
                                             ]);
-                                            if(!empty($dataLastInsertOrder)) {
-                                                $this->print_order($ip_address_printer, $dataLastInsertOrder['Table']['name'], $dataLastInsertOrder['OrderDetail']);
+                                            if (!empty($dataLastInsertOrder)) {
+                                                $this->print_order($ip_address_printer, $dataLastInsertOrder['Table']['name'], $dataLastInsertOrder['OrderDetail'], $dt, $operator_name);
                                                 return json_encode($this->_generateStatusCode(200, "Data order has been saved and printed successfully."));
                                             } else {
                                                 debug("Error : Last Insert Order ID not found.");
                                                 return json_encode($this->_generateStatusCode(401, "Error : Last Insert Order ID not found."));
-                                            }                                            
+                                            }
                                         } else {
                                             debug("Error : IP Address Printer not found.");
                                             return json_encode($this->_generateStatusCode(401, "Error : IP Address Printer not found."));
-                                        }                                        
+                                        }
                                     } catch (Exception $ex) {
                                         debug("Error : print order failed.");
                                         return json_encode($this->_generateStatusCode(405, "Error : print order failed."));
                                     }
                                 } else {
                                     return json_encode($this->_generateStatusCode(200, "Data has been saved successfully."));
-                                }                                
+                                }
                             } catch (Exception $ex) {
                                 debug("Error : failed to save.");
                                 return json_encode($this->_generateStatusCode(405, "Error : Failed to save."));
@@ -370,7 +372,7 @@ class OrdersController extends AppController {
         }
     }
 
-    function print_order($ip_address_printer, $table, $dataOrderDetail) {
+    function print_order($ip_address_printer, $table, $dataOrderDetail, $datetime, $operator) {
         $this->autoRender = false;
         if (!empty($ip_address_printer) && !empty($dataOrderDetail) && !empty($table)) {
             App::import("Vendor", "escpos-php/autoload");
@@ -387,7 +389,7 @@ class OrdersController extends AppController {
                 $view = new View($this);
                 $helper = $view->loadHelper("Html");
                 foreach ($dataOrderDetail as $orderDetail) {
-                    $items[] = new DataOrder($orderDetail['RestoMenu']['name'], $orderDetail['quantity']);
+                    $items[] = new DataOrder($orderDetail['RestoMenu']['name'], $orderDetail['quantity'], $orderDetail['note']);
                     $grandTotal += $orderDetail['total'];
                 }
                 $total = new DataOrder("Total", $helper->separator_idr($grandTotal));
@@ -410,9 +412,19 @@ class OrdersController extends AppController {
                 $printer->setEmphasis(false);
                 $printer->feed();
 
+                // Date
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Tanggal  : " . $helper->cvtWaktuFull($datetime));
+                $printer->feed();
+
+                // Operator
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Operator : " . $operator);
+                $printer->feed();
+
                 /* Table Info */
                 $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
-                $printer->text("Meja : " . $table);
+                $printer->text("Meja     : " . $table);
                 $printer->feed();
 
                 /* Items */
@@ -523,12 +535,14 @@ class DataOrder {
 
     private $name;
     private $quantity;
+    private $note;
     private $currencySign;
 
-    public function __construct($name = '', $quantity = '', $currencySign = false) {
+    public function __construct($name = '', $quantity = '', $note = '', $currencySign = false) {
         $this->name = $name;
         $this->quantity = $quantity;
         $this->currencySign = $currencySign;
+        $this->note = $note;
     }
 
     public function __toString() {
@@ -541,7 +555,8 @@ class DataOrder {
 
         $sign = ($this->currencySign ? 'IDR ' : '');
         $right = str_pad($sign . $this->quantity, $rightCols, ' ', STR_PAD_LEFT);
-        return "$left$right\n";
+        $note_area = !empty($this->note) ? sprintf('(%5s)', $this->note) : "";
+        return "$left$right\n     $note_area\n";
     }
 
 }
