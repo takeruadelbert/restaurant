@@ -356,7 +356,10 @@ class OrdersController extends AppController {
                 if (!empty($dataOrder)) {
                     $dataPrinter = ClassRegistry::init("EntityConfiguration")->find("first");
                     $ip_address_printer = $dataPrinter['EntityConfiguration']['ip_address_printer'];
-                    if ($this->print_receipt($ip_address_printer, $dataOrder['OrderDetail'])) {
+                    $cashier = $this->Session->read("credential.admin.Biodata.full_name");
+                    $dt = date("Y-m-d H:i:s");
+                    $table = $dataOrder['Table']['name'];
+                    if ($this->print_receipt($ip_address_printer, $dataOrder['OrderDetail'], $dt, $cashier, $table)) {
                         return json_encode($this->_generateStatusCode(206, "Now Printing..."));
                     } else {
                         return json_encode($this->_generateStatusCode(405, "Error : Cek Kembali Konfigurasi Printer Anda."));
@@ -454,7 +457,7 @@ class OrdersController extends AppController {
         }
     }
 
-    private function print_receipt($ip_address_printer, $dataOrderDetail) {
+    private function print_receipt($ip_address_printer, $dataOrderDetail, $datetime, $cashier, $table) {
         $this->autoRender = false;
         if (!empty($ip_address_printer) && !empty($dataOrderDetail)) {
             App::import("Vendor", "escpos-php/autoload");
@@ -471,10 +474,10 @@ class OrdersController extends AppController {
                 $view = new View($this);
                 $helper = $view->loadHelper("Html");
                 foreach ($dataOrderDetail as $detail) {
-                    $items[] = new Receipt($detail['RestoMenu']['name'], $helper->separator_idr($detail['total']));
+                    $items[] = new Receipt($detail['RestoMenu']['name'], $detail['quantity'], $detail['amount'], $helper->separator_idr($detail['total']));
                     $grand_total += $detail['total'];
                 }
-                $total = new Receipt("Total", $helper->separator_idr($grand_total));
+                $total = new Receipt("Total", "", "", $helper->separator_idr($grand_total), true, false);
 
                 $dataSistemConfig = ClassRegistry::init("EntityConfiguration")->find("first");
                 $corporate_name = $dataSistemConfig['EntityConfiguration']['name'];
@@ -489,28 +492,53 @@ class OrdersController extends AppController {
 
                 /* Title of receipt */
                 $printer->setEmphasis(true);
-                $printer->text("INVOICE\n");
+                $printer->text("INVOICE");
+                $printer->feed(2);
                 $printer->setEmphasis(false);
+
+                // Date
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Tanggal  : " . $helper->cvtWaktuFull($datetime));
+                $printer->feed();
+
+                // Operator
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Cashier  : " . $cashier);
+                $printer->feed();
+
+                /* Table Info */
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Meja     : " . $table);
+                $printer->feed(2);
+
+                $printer->text("------------------------------------------------");
+                $printer->feed();
+                $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
+                $printer->text("Description                            Sub Total");
+                $printer->feed();
+                $printer->text("------------------------------------------------");
+                $printer->feed();
 
                 /* Items */
                 $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_LEFT);
-                $printer->setEmphasis(true);
-                $printer->text(new Receipt('', 'IDR'));
                 $printer->setEmphasis(false);
                 foreach ($items as $item) {
                     $printer->text($item);
                 }
-                $printer->setEmphasis(true);
+                $printer->text("------------------------------------------------");
                 $printer->feed();
 
-                /* Total */
+                // Total
+                $printer->setEmphasis(true);
                 $printer->text($total);
                 $printer->selectPrintMode();
 
                 /* Footer */
                 $printer->feed(2);
+                $printer->text("------------------------------------------------");
+                $printer->feed();
                 $printer->setJustification(Mike42\Escpos\Printer::JUSTIFY_CENTER);
-                $printer->text("Terima Kasih..!\n");
+                $printer->text("Terima Kasih Atas Kunjungan Anda");
                 $printer->feed(2);
 
                 /* Cut the receipt and open the cash drawer */
@@ -564,12 +592,19 @@ class DataOrder {
 class Receipt {
 
     private $menu_name;
-    private $price;
+    private $quantity;
+    private $amount;
+    private $total;
+    private $type = "PCS";
+    private $flag;
     private $currencySign;
 
-    public function __construct($menu_name = "", $price = "", $currencySign = false) {
+    public function __construct($menu_name = "", $quantity = "", $amount = "", $total = "", $flag = false, $currencySign = false) {
         $this->menu_name = $menu_name;
-        $this->price = $price;
+        $this->quantity = $quantity;
+        $this->amount = $amount;
+        $this->total = $total;
+        $this->flag = $flag;
         $this->currencySign = $currencySign;
     }
 
@@ -582,8 +617,28 @@ class Receipt {
         $left = str_pad($this->menu_name, $leftCols);
 
         $sign = ($this->currencySign ? 'IDR ' : '');
-        $right = str_pad($sign . $this->price, $rightCols, ' ', STR_PAD_LEFT);
-        return "$left$right\n";
+        $right = str_pad($sign . $this->total, $rightCols, ' ', STR_PAD_LEFT);
+        if (!$this->flag) {
+            $area_detail = $this->give_spaces() . $this->quantity . " " . $this->type . $this->give_spaces() . $this->separator_idr($this->amount);
+            return "$left$right\n$area_detail\n";
+        } else {
+            return "$left$right\n";
+        }
+    }
+
+    private function give_spaces($n = 10) {
+        $result = "";
+        for ($i = 0; $i < $n; $i++) {
+            $result .= " ";
+        }
+        return $result;
+    }
+
+    private function separator_idr($Rp) {
+        if ($Rp == "") {
+            return "0";
+        }
+        return number_format($Rp, 0, "", ".");
     }
 
 }
